@@ -1,4 +1,4 @@
-package it.unibo.tetraj.model.pieces;
+package it.unibo.tetraj.model.piece;
 
 import java.awt.Color;
 

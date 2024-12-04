@@ -1,6 +1,6 @@
-package it.unibo.tetraj.model.pieces.selection;
+package it.unibo.tetraj.model.piece.selection;
 
-import it.unibo.tetraj.model.pieces.AbstractTetromino;
+import it.unibo.tetraj.model.piece.AbstractTetromino;
 
 /**
  * Strategy interface for selecting the next tetromino piece to spawn. Allows different piece

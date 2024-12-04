@@ -1,11 +1,11 @@
-package it.unibo.tetraj.model.pieces.selection;
+package it.unibo.tetraj.model.piece.selection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import it.unibo.tetraj.model.pieces.AbstractTetromino;
-import it.unibo.tetraj.model.pieces.TetrominoRegistry;
+import it.unibo.tetraj.model.piece.AbstractTetromino;
+import it.unibo.tetraj.model.piece.TetrominoRegistry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

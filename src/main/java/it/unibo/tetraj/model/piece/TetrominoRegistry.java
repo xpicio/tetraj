@@ -1,4 +1,4 @@
-package it.unibo.tetraj.model.pieces;
+package it.unibo.tetraj.model.piece;
 
 import java.util.List;
 import java.util.Map;

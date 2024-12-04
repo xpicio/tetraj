@@ -1,6 +1,6 @@
-package it.unibo.tetraj.model.pieces;
+package it.unibo.tetraj.model.piece;
 
-import it.unibo.tetraj.model.pieces.selection.PieceSelectionStrategy;
+import it.unibo.tetraj.model.piece.selection.PieceSelectionStrategy;
 import java.util.Objects;
 
 /**

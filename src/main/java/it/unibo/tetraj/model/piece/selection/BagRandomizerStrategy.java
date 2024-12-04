@@ -1,7 +1,7 @@
-package it.unibo.tetraj.model.pieces.selection;
+package it.unibo.tetraj.model.piece.selection;
 
-import it.unibo.tetraj.model.pieces.AbstractTetromino;
-import it.unibo.tetraj.model.pieces.TetrominoRegistry;
+import it.unibo.tetraj.model.piece.AbstractTetromino;
+import it.unibo.tetraj.model.piece.TetrominoRegistry;
 import it.unibo.tetraj.utils.Logger;
 import it.unibo.tetraj.utils.LoggerFactory;
 import java.util.ArrayList;
@@ -27,12 +27,12 @@ public final class BagRandomizerStrategy implements PieceSelectionStrategy {
     final Class<? extends AbstractTetromino<?>> currentPiece;
 
     if (bag.isEmpty()) {
-      LOGGER.info("Bag empty, shuffling {} pieces", availableTypes.size());
+      LOGGER.debug("Bag empty, shuffling {} pieces", availableTypes.size());
       bag.addAll(availableTypes);
       Collections.shuffle(bag, random);
     }
     currentPiece = bag.remove(0);
-    LOGGER.info("Spawning piece {}", currentPiece.getSimpleName());
+    LOGGER.debug("Spawning piece {}", currentPiece.getSimpleName());
     return currentPiece;
   }
 
