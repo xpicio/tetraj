@@ -33,18 +33,13 @@ dependencies {
     // Suppressions for SpotBugs
     compileOnly("com.github.spotbugs:spotbugs-annotations:4.9.8")
 
-    // Maven dependencies are composed by a group name, a name and a version, separated by colons
-    implementation("com.omertron:API-OMDB:1.5")
-    implementation("org.jooq:jool:0.9.15")
-
     /*
-     * Simple Logging Facade for Java (SLF4J) with Apache Log4j
-     * See: http://www.slf4j.org/
+     * Apache Log4j2 - Direct logging framework (no SLF4J)
+     * See: https://logging.apache.org/log4j/2.x/
      */
-    val slf4jVersion = "2.0.17"
-    implementation("org.slf4j:slf4j-api:$slf4jVersion")
-    // Logback backend for SLF4J
-    runtimeOnly("ch.qos.logback:logback-classic:1.5.21")
+    val log4j2Version = "2.25.2"
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
     // JUnit API and testing engine
     testImplementation(platform("org.junit:junit-bom:6.0.1"))
@@ -55,7 +50,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("it.unibo.sampleapp.RateAMovie")
+    mainClass.set("it.unibo.tetraj.Main")
 }
 
 tasks.withType<Test>().configureEach {

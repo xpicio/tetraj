@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <!-- Properties for reusable patterns -->
+    <Properties>
+        <!-- Console output pattern with colors -->
+        <Property name="LOG_PATTERN">
+            %d{HH:mm:ss.SSS} [%t] %highlight{%-5level}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=white} %logger{36} - %msg%n
+        </Property>
+    </Properties>
+    
+    <!-- Appenders define where logs are sent -->
+    <Appenders>
+        <!-- Console Appender with color support -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+        </Console>
+    </Appenders>
+    
+    <!-- Logger configuration -->
+    <Loggers>
+        <!-- Single logger for all Tetraj packages (hierarchical) -->
+        <Logger name="it.unibo.tetraj" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        
+        <!-- External libraries - WARN level to reduce noise -->
+        <Logger name="org.apache" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        
+        <!-- Root Logger - catches everything else -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
