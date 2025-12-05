@@ -150,7 +150,7 @@ public final class ResourceManager {
 
   /** Clears all caches to free memory. */
   public void clearCaches() {
-    LOGGER.debug("Clearing resource caches...");
+    LOGGER.info("Clearing resource caches...");
 
     FONT_CACHE.clear();
     IMAGE_CACHE.clear();
@@ -159,7 +159,7 @@ public final class ResourceManager {
     SOUND_CACHE.values().forEach(Clip::close);
     SOUND_CACHE.clear();
 
-    LOGGER.debug("Resource caches cleared");
+    LOGGER.info("Resource caches cleared");
   }
 
   /** Preloads common fonts. */
@@ -223,7 +223,7 @@ public final class ResourceManager {
       // Derive font with desired size
       final Font sizedFont = baseFont.deriveFont(size);
 
-      LOGGER.debug("Font loaded: {} size {}", fontName, size);
+      LOGGER.info("Font loaded: {} size {}", fontName, size);
       return sizedFont;
 
     } catch (final FontFormatException | IOException e) {
@@ -246,7 +246,7 @@ public final class ResourceManager {
       }
 
       final Image image = ImageIO.read(inputStream);
-      LOGGER.debug("Image loaded: {}", imageName);
+      LOGGER.info("Image loaded: {}", imageName);
       return image;
 
     } catch (final IOException e) {
@@ -275,7 +275,7 @@ public final class ResourceManager {
       final Clip clip = AudioSystem.getClip();
       clip.open(audioInputStream);
 
-      LOGGER.debug("Sound loaded: {}", soundName);
+      LOGGER.info("Sound loaded: {}", soundName);
       return clip;
 
     } catch (final UnsupportedAudioFileException e) {
@@ -296,5 +296,7 @@ public final class ResourceManager {
    * @param name The font file name
    * @param size The font size
    */
-  private record FontKey(String name, float size) {}
+  private record FontKey(String name, float size) {
+    // empty
+  }
 }
