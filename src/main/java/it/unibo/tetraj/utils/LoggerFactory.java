@@ -55,6 +55,10 @@ public final class LoggerFactory {
     LOGGER_CACHE.clear();
   }
 
+  /**
+   * Flushes all cached loggers and clears the cache. Should be called during application shutdown
+   * to ensure all log messages are written.
+   */
   public static void flushAll() {
     LOGGER_CACHE.values().forEach(Logger::flush);
     clearCache();

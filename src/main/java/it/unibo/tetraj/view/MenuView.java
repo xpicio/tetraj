@@ -11,22 +11,15 @@ import java.awt.image.BufferStrategy;
 /** View for the main menu state. Simple implementation showing "MENU STATE". */
 public class MenuView {
 
-  /** Canvas width. */
   private static final int WIDTH = 800;
-
-  /** Canvas height. */
   private static final int HEIGHT = 600;
-
-  /** Background color. */
   private static final Color BACKGROUND = new Color(30, 30, 40);
-
-  /** Text color. */
   private static final Color TEXT_COLOR = Color.WHITE;
-
-  /** The canvas for rendering. */
+  // Font sizes
+  private static final int TITLE_FONT_SIZE = 48;
+  private static final int INFO_FONT_SIZE = 20;
+  private static final int INFO_Y_OFFSET = 50;
   private final Canvas canvas;
-
-  /** Buffer strategy for smooth rendering. */
   private BufferStrategy bufferStrategy;
 
   /** Creates a new menu view. */
@@ -65,16 +58,16 @@ public class MenuView {
 
       // Draw state text
       g.setColor(TEXT_COLOR);
-      g.setFont(new Font("Arial", Font.BOLD, 48));
+      g.setFont(new Font("Arial", Font.BOLD, TITLE_FONT_SIZE));
       final String text = "MENU STATE";
       final int textWidth = g.getFontMetrics().stringWidth(text);
       g.drawString(text, (WIDTH - textWidth) / 2, HEIGHT / 2);
 
       // Draw instructions
-      g.setFont(new Font("Arial", Font.PLAIN, 20));
+      g.setFont(new Font("Arial", Font.PLAIN, INFO_FONT_SIZE));
       final String inst = "Press ENTER to play, ESC to quit";
       final int instWidth = g.getFontMetrics().stringWidth(inst);
-      g.drawString(inst, (WIDTH - instWidth) / 2, HEIGHT / 2 + 50);
+      g.drawString(inst, (WIDTH - instWidth) / 2, HEIGHT / 2 + INFO_Y_OFFSET);
 
       bufferStrategy.show();
     } finally {

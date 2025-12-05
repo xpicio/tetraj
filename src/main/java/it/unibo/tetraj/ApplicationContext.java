@@ -39,6 +39,11 @@ public final class ApplicationContext {
     shutdown(false);
   }
 
+  /**
+   * Requests application shutdown with hook flag.
+   *
+   * @param fromHook true if called from shutdown hook, false otherwise
+   */
   public void shutdown(final boolean fromHook) {
     if (!shutdownRequested) {
       shutdownRequested = true;
@@ -153,7 +158,9 @@ public final class ApplicationContext {
                               Thread.sleep(watchdogTimeout);
                               LOGGER.warn("Shutdown timed out {}ms! Forcing halt", watchdogTimeout);
                               Runtime.getRuntime().halt(1);
-                            } catch (InterruptedException e) {
+                            } catch (final InterruptedException e) {
+                              // Ignore interruption - we're shutting down anyway
+                              Thread.currentThread().interrupt();
                             }
                           });
                   watchdog.setDaemon(true);

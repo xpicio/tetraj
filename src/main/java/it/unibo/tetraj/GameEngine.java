@@ -24,6 +24,10 @@ public final class GameEngine implements Runnable {
   private static final long OPTIMAL_TIME = 1_000_000_000 / TARGET_FPS;
   // Conversion from nanoseconds to seconds
   private static final double NANO_TO_SEC = 1.0 / 1_000_000_000.0;
+  // Thread join timeout in milliseconds
+  private static final int THREAD_JOIN_TIMEOUT_MS = 5000;
+  // Canvas initialization delay in milliseconds
+  private static final int CANVAS_INIT_DELAY_MS = 50;
   private final JFrame window;
   private final GameStateManager stateManager;
   private Controller currentController;
@@ -135,7 +139,7 @@ public final class GameEngine implements Runnable {
       // Wait for thread to finish
       try {
         if (gameThread != null) {
-          gameThread.join(5000);
+          gameThread.join(THREAD_JOIN_TIMEOUT_MS);
         }
       } catch (final InterruptedException ex) {
         LOGGER.warn("Interrupted while waiting for game thread");
@@ -180,10 +184,13 @@ public final class GameEngine implements Runnable {
         try {
           SwingUtilities.invokeAndWait(this::updateCanvas);
           // Give a bit of time for the canvas to fully initialize
-          Thread.sleep(50);
+          Thread.sleep(CANVAS_INIT_DELAY_MS);
           canvasReady = true;
-        } catch (final Exception ex) {
-          LOGGER.warn("Error updating canvas: {}", ex.getMessage());
+        } catch (final InterruptedException ex) {
+          LOGGER.warn("Canvas update interrupted: {}", ex.getMessage());
+          Thread.currentThread().interrupt();
+        } catch (final java.lang.reflect.InvocationTargetException ex) {
+          LOGGER.warn("Error in canvas update: {}", ex.getCause().getMessage());
         }
 
         lastState = currentState;
