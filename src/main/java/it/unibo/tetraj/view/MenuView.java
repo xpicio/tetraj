@@ -30,6 +30,7 @@ public final class MenuView {
   private static final int CONTROLS_Y = 220;
   private static final int CREDITS_BOTTOM_OFFSET = 40;
   private static final int CREDITS_LINE_HEIGHT = 15;
+  private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final Color TEXT_COLOR = Color.WHITE;
   private static final Color HEADER_COLOR = new Color(255, 220, 100);
   private static final Color CREDITS_COLOR = new Color(200, 200, 200);
@@ -45,7 +46,7 @@ public final class MenuView {
   public MenuView() {
     this.canvas = new Canvas();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-    canvas.setBackground(Color.BLACK);
+    canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);
     preloadResources();
   }

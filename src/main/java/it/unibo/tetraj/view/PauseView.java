@@ -11,9 +11,9 @@ import java.awt.image.BufferStrategy;
 /** View for the pause state. Simple implementation showing "PAUSED". */
 public class PauseView {
 
-  private static final int WIDTH = 800;
-  private static final int HEIGHT = 600;
-  private static final Color BACKGROUND = new Color(40, 40, 50);
+  private static final int WIDTH = 1024;
+  private static final int HEIGHT = 768;
+  private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final Color TEXT_COLOR = Color.YELLOW;
   // Font sizes
   private static final int TITLE_FONT_SIZE = 48;
@@ -26,7 +26,7 @@ public class PauseView {
   public PauseView() {
     this.canvas = new Canvas();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-    canvas.setBackground(Color.BLACK);
+    canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);
   }
 
@@ -53,7 +53,7 @@ public class PauseView {
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
       // Clear screen
-      g.setColor(BACKGROUND);
+      g.setColor(BACKGROUND_COLOR);
       g.fillRect(0, 0, WIDTH, HEIGHT);
 
       // Draw state text

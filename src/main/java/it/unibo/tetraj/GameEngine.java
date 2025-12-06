@@ -6,6 +6,7 @@ import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -30,6 +31,7 @@ public final class GameEngine implements Runnable {
   private static final int THREAD_JOIN_TIMEOUT_MS = 5000;
   // Canvas initialization delay in milliseconds
   private static final int CANVAS_INIT_DELAY_MS = 50;
+  private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private final JFrame window;
   private final GameStateManager stateManager;
   private final ApplicationProperties applicationProperties;
@@ -175,7 +177,9 @@ public final class GameEngine implements Runnable {
     final JFrame frame = new JFrame(title);
     frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     frame.setResizable(false);
-    frame.setLocationRelativeTo(null);
+
+    // Set dark background to avoid white flash
+    frame.getContentPane().setBackground(BACKGROUND_COLOR);
 
     // Window close handler
     frame.addWindowListener(
@@ -212,6 +216,11 @@ public final class GameEngine implements Runnable {
     currentCanvas = newCanvas;
     window.add(currentCanvas);
     window.pack();
+
+    // Center window on screen (must be after pack!)
+    if (!window.isVisible()) {
+      window.setLocationRelativeTo(null);
+    }
 
     // Add key listener to new canvas
     currentCanvas.addKeyListener(
