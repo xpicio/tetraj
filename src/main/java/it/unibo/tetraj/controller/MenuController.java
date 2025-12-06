@@ -3,6 +3,7 @@ package it.unibo.tetraj.controller;
 import it.unibo.tetraj.ApplicationContext;
 import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.InputHandler;
+import it.unibo.tetraj.command.QuitCommand;
 import it.unibo.tetraj.command.StateTransitionCommand;
 import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.util.Logger;
@@ -78,7 +79,7 @@ public class MenuController implements Controller {
         KeyEvent.VK_ENTER,
         new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
 
-    // ESC to quit - use lambda for simplicity
-    inputHandler.bindKey(KeyEvent.VK_ESCAPE, applicationContext::shutdown);
+    // ESC to quit
+    inputHandler.bindKey(KeyEvent.VK_ESCAPE, new QuitCommand(applicationContext));
   }
 }
