@@ -4,6 +4,7 @@ import it.unibo.tetraj.ApplicationContext;
 import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.InputHandler;
 import it.unibo.tetraj.command.StateTransitionCommand;
+import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.view.MenuView;
@@ -14,6 +15,7 @@ import java.awt.event.KeyEvent;
 public class MenuController implements Controller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MenuController.class);
+  private final MenuModel model;
   private final MenuView view;
   private final InputHandler inputHandler;
   private final ApplicationContext applicationContext;
@@ -25,8 +27,9 @@ public class MenuController implements Controller {
    */
   public MenuController(final ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
-    this.view = new MenuView();
-    this.inputHandler = new InputHandler();
+    model = new MenuModel();
+    view = new MenuView();
+    inputHandler = new InputHandler();
 
     setupKeyBindings();
   }
@@ -53,7 +56,7 @@ public class MenuController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void render() {
-    view.render();
+    view.render(model);
   }
 
   /** {@inheritDoc} */

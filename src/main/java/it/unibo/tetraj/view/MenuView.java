@@ -1,6 +1,8 @@
 package it.unibo.tetraj.view;
 
-import it.unibo.tetraj.util.ApplicationProperties;
+import it.unibo.tetraj.model.MenuModel;
+import it.unibo.tetraj.model.MenuModel.Controls;
+import it.unibo.tetraj.model.MenuModel.Credits;
 import it.unibo.tetraj.util.ResourceManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -31,7 +33,6 @@ public final class MenuView {
   private static final Color TEXT_COLOR = Color.WHITE;
   private static final Color HEADER_COLOR = new Color(255, 220, 100);
   private static final Color CREDITS_COLOR = new Color(200, 200, 200);
-  private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private BufferStrategy bufferStrategy;
   private Image backgroundImage;
@@ -42,7 +43,6 @@ public final class MenuView {
 
   /** Creates a new menu view. */
   public MenuView() {
-    applicationProperties = ApplicationProperties.getInstance();
     this.canvas = new Canvas();
     canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
     canvas.setBackground(Color.BLACK);
@@ -58,8 +58,12 @@ public final class MenuView {
     }
   }
 
-  /** Renders the menu view. */
-  public void render() {
+  /**
+   * Renders the menu view.
+   *
+   * @param model The menu model containing data to render
+   */
+  public void render(final MenuModel model) {
     if (bufferStrategy == null) {
       initialize();
       if (bufferStrategy == null) {
@@ -102,9 +106,9 @@ public final class MenuView {
       }
 
       // Draw menu content
-      drawTitle(g);
-      drawControls(g);
-      drawCredits(g);
+      drawTitle(g, model);
+      drawControls(g, model);
+      drawCredits(g, model);
 
       bufferStrategy.show();
     } finally {
@@ -159,67 +163,72 @@ public final class MenuView {
    * Draws the game title.
    *
    * @param g The graphics context
+   * @param model The menu model containing the title
    */
-  private void drawTitle(final Graphics2D g) {
+  private void drawTitle(final Graphics2D g, final MenuModel model) {
+    final String appTitle = model.getAppTitle();
     g.setColor(HEADER_COLOR);
     g.setFont(titleFont);
-    drawCenteredString(g, "TETRAJ", TITLE_Y);
+    drawCenteredString(g, appTitle.toUpperCase(java.util.Locale.ROOT), TITLE_Y);
   }
 
   /**
    * Draws the controls section.
    *
    * @param g The graphics context
+   * @param model The menu model containing controls data
    */
-  private void drawControls(final Graphics2D g) {
+  private void drawControls(final Graphics2D g, final MenuModel model) {
+    final Controls controls = model.getControls();
     int y = CONTROLS_Y;
 
     // Controls header
     g.setColor(HEADER_COLOR);
     g.setFont(headerFont);
-    drawCenteredString(g, "PRESS ENTER TO START", y);
+    drawCenteredString(g, controls.header(), y);
 
     y += SECTION_SPACING;
 
     // Controls section
     g.setFont(textFont);
-    drawCenteredString(g, "CONTROLS", y);
+    drawCenteredString(g, controls.sectionTitle(), y);
 
     y += LINE_HEIGHT + 10;
 
     g.setColor(TEXT_COLOR);
     g.setFont(textFont);
 
-    drawCenteredString(g, "A D or ← → - Move", y);
-    y += LINE_HEIGHT;
-    drawCenteredString(g, "W or ↑ - Rotate", y);
-    y += LINE_HEIGHT;
-    drawCenteredString(g, "S or ↓ - Soft Drop", y);
-    y += LINE_HEIGHT;
-    drawCenteredString(g, "SPACE - Hard Drop", y);
+    // Movement controls
+    for (final Controls.ControlBinding binding : controls.movements()) {
+      drawCenteredString(g, binding.toString(), y);
+      y += LINE_HEIGHT;
+    }
 
-    // Common controls below
+    // Action controls
     y += LINE_HEIGHT + 10;
-    g.setFont(textFont);
-    drawCenteredString(g, "P - Pause    ESC - Menu", y);
+    for (final Controls.ControlBinding binding : controls.actions()) {
+      drawCenteredString(g, binding.toString(), y);
+      y += LINE_HEIGHT;
+    }
   }
 
   /**
    * Draws the credits section.
    *
    * @param g The graphics context
+   * @param model The menu model containing credits data
    */
-  private void drawCredits(final Graphics2D g) {
+  private void drawCredits(final Graphics2D g, final MenuModel model) {
+    final Credits credits = model.getCredits();
     int y = HEIGHT - CREDITS_BOTTOM_OFFSET;
 
     g.setColor(CREDITS_COLOR);
     g.setFont(creditsFont);
     // First line of credits
-    drawCenteredString(
-        g, applicationProperties.getAuthor() + " - " + applicationProperties.getAuthorEmail(), y);
+    drawCenteredString(g, credits.getFirstLine(), y);
     // Second line of credits
     y += CREDITS_LINE_HEIGHT;
-    drawCenteredString(g, applicationProperties.getAuthorUniversity(), y);
+    drawCenteredString(g, credits.getSecondLine(), y);
   }
 
   private void drawCenteredString(final Graphics2D g, final String text, final int y) {
