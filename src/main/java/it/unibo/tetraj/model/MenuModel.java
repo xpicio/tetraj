@@ -28,7 +28,9 @@ public final class MenuModel {
             "CONTROLS",
             List.of(
                 new Controls.ControlBinding("A/D or ← →", "Move"),
-                new Controls.ControlBinding("W or ↑", "Rotate"),
+                new Controls.ControlBinding("W or ↑", "Rotate clockwise"),
+                new Controls.ControlBinding("Z or CTRL", "Rotate counterclockwise"),
+                new Controls.ControlBinding("C or SHIFT", "Hold piece"),
                 new Controls.ControlBinding("S or ↓", "Soft Drop"),
                 new Controls.ControlBinding("SPACE", "Hard Drop")),
             List.of(
