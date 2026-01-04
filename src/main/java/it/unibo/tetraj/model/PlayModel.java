@@ -3,7 +3,9 @@ package it.unibo.tetraj.model;
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import it.unibo.tetraj.model.piece.TetrominoFactory;
 import it.unibo.tetraj.model.piece.selection.BagRandomizerStrategy;
+import it.unibo.tetraj.util.ResourceManager;
 import java.util.List;
+import java.util.function.Consumer;
 
 /** Model for the playing state. Manages game logic and state. */
 public final class PlayModel {
@@ -13,6 +15,7 @@ public final class PlayModel {
   private static final double SPEED_MULTIPLIER = 0.9;
   private final TetrominoFactory tetrominoFactory;
   private final Board board;
+  private final ResourceManager resources;
   private AbstractTetromino<?> currentPiece;
   private AbstractTetromino<?> nextPiece;
   private AbstractTetromino<?> heldPiece;
@@ -28,6 +31,7 @@ public final class PlayModel {
   public PlayModel() {
     board = new Board();
     tetrominoFactory = new TetrominoFactory(new BagRandomizerStrategy());
+    resources = ResourceManager.getInstance();
     startNewGame();
   }
 
@@ -68,25 +72,15 @@ public final class PlayModel {
 
   /** Moves the current piece left. */
   public void moveLeft() {
-    if (gameOver || currentPiece == null) {
-      return;
-    }
-
-    currentPiece.move(-1, 0);
-    if (!board.isValidPosition(currentPiece)) {
-      currentPiece.move(1, 0);
+    if (tryMove(-1, 0)) {
+      resources.playSound("move.wav");
     }
   }
 
   /** Moves the current piece right. */
   public void moveRight() {
-    if (gameOver || currentPiece == null) {
-      return;
-    }
-
-    currentPiece.move(1, 0);
-    if (!board.isValidPosition(currentPiece)) {
-      currentPiece.move(-1, 0);
+    if (tryMove(1, 0)) {
+      resources.playSound("move.wav");
     }
   }
 
@@ -96,13 +90,7 @@ public final class PlayModel {
    * @return true if the piece was placed
    */
   public boolean moveDown() {
-    if (gameOver || currentPiece == null) {
-      return false;
-    }
-
-    currentPiece.move(0, 1);
-    if (!board.isValidPosition(currentPiece)) {
-      currentPiece.move(0, -1);
+    if (!tryMove(0, 1)) {
       placePiece();
       return true;
     }
@@ -125,29 +113,20 @@ public final class PlayModel {
 
     score += dropDistance * 2;
     placePiece();
+    resources.playSound("drop.wav");
   }
 
   /** Rotates the current piece clockwise. */
   public void rotateClockwise() {
-    if (gameOver || currentPiece == null) {
-      return;
-    }
-
-    currentPiece.rotateClockwise();
-    if (!board.isValidPosition(currentPiece) && !tryWallKick()) {
-      currentPiece.rotatecounterClockwise();
+    if (tryRotate(AbstractTetromino::rotateClockwise, AbstractTetromino::rotatecounterClockwise)) {
+      resources.playSound("rotate.wav");
     }
   }
 
   /** Rotates the current piece counterclockwise. */
   public void rotatecounterClockwise() {
-    if (gameOver || currentPiece == null) {
-      return;
-    }
-
-    currentPiece.rotatecounterClockwise();
-    if (!board.isValidPosition(currentPiece) && !tryWallKick()) {
-      currentPiece.rotateClockwise();
+    if (tryRotate(AbstractTetromino::rotatecounterClockwise, AbstractTetromino::rotateClockwise)) {
+      resources.playSound("rotate.wav");
     }
   }
 
@@ -172,6 +151,34 @@ public final class PlayModel {
     }
   }
 
+  private boolean tryRotate(
+      final Consumer<AbstractTetromino<?>> action,
+      final Consumer<AbstractTetromino<?>> undoAction) {
+    if (gameOver || currentPiece == null) {
+      return false;
+    }
+
+    action.accept(currentPiece);
+    if (!board.isValidPosition(currentPiece) && !tryWallKick()) {
+      undoAction.accept(currentPiece);
+      return false;
+    }
+    return true;
+  }
+
+  private boolean tryMove(final int dx, final int dy) {
+    if (gameOver || currentPiece == null) {
+      return false;
+    }
+
+    currentPiece.move(dx, dy);
+    if (!board.isValidPosition(currentPiece)) {
+      currentPiece.move(-dx, -dy);
+      return false;
+    }
+    return true;
+  }
+
   private boolean tryWallKick() {
     final int[] xOffsets = {-1, 1, -2, 2, 0};
     final int[] yOffsets = {0, 0, 0, 0, -1};
@@ -192,6 +199,7 @@ public final class PlayModel {
     final List<Integer> clearedLines = board.clearCompletedLines();
     if (!clearedLines.isEmpty()) {
       updateScore(clearedLines.size());
+      resources.playSound("clear.wav");
     }
 
     currentPiece = nextPiece;
@@ -213,6 +221,7 @@ public final class PlayModel {
     if (newLevel > level) {
       level = newLevel;
       fallSpeed = BASE_FALL_SPEED * Math.pow(SPEED_MULTIPLIER, level - 1);
+      resources.playSound("levelUp.wav");
     }
   }
 
