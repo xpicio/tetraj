@@ -258,7 +258,7 @@ public final class PlayModel {
    * @return The current piece or null
    */
   public AbstractTetromino<?> getCurrentPiece() {
-    return currentPiece;
+    return currentPiece.copy();
   }
 
   /**
@@ -267,7 +267,7 @@ public final class PlayModel {
    * @return The next piece or null
    */
   public AbstractTetromino<?> getNextPiece() {
-    return nextPiece;
+    return nextPiece.copy();
   }
 
   /**
@@ -276,7 +276,7 @@ public final class PlayModel {
    * @return The held piece or null
    */
   public AbstractTetromino<?> getHeldPiece() {
-    return heldPiece;
+    return heldPiece.copy();
   }
 
   /**
