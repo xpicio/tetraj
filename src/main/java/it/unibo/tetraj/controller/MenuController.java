@@ -22,6 +22,7 @@ public class MenuController implements Controller {
   private final MenuModel model;
   private final MenuView view;
   private final InputHandler inputHandler;
+  private static final float MUSIC_VOLUME = 0.1f;
 
   /**
    * Creates a new menu controller.
@@ -39,7 +40,7 @@ public class MenuController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter() {
-    resources.playBackgroundMusic("menuLoop.wav", 0.1f);
+    resources.playBackgroundMusic("menuLoop.wav", MUSIC_VOLUME);
     setupKeyBindings();
     LOGGER.info("Entering menu state");
   }
