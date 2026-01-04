@@ -8,6 +8,7 @@ import it.unibo.tetraj.command.StateTransitionCommand;
 import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
+import it.unibo.tetraj.util.ResourceManager;
 import it.unibo.tetraj.view.MenuView;
 import java.awt.Canvas;
 import java.awt.event.KeyEvent;
@@ -16,10 +17,11 @@ import java.awt.event.KeyEvent;
 public class MenuController implements Controller {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MenuController.class);
+  private final ApplicationContext applicationContext;
+  private final ResourceManager resources;
   private final MenuModel model;
   private final MenuView view;
   private final InputHandler inputHandler;
-  private final ApplicationContext applicationContext;
 
   /**
    * Creates a new menu controller.
@@ -28,6 +30,7 @@ public class MenuController implements Controller {
    */
   public MenuController(final ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
+    resources = ResourceManager.getInstance();
     model = new MenuModel();
     view = new MenuView();
     inputHandler = new InputHandler();
@@ -36,6 +39,7 @@ public class MenuController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter() {
+    resources.playBackgroundMusic("menuLoop.wav", 0.1f);
     setupKeyBindings();
     LOGGER.info("Entering menu state");
   }
@@ -76,7 +80,11 @@ public class MenuController implements Controller {
     // ENTER to start playing
     inputHandler.bindKey(
         KeyEvent.VK_ENTER,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
+        () -> {
+          resources.playSound("menuSelect.wav");
+          new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING)
+              .execute();
+        });
 
     // ESC to quit
     inputHandler.bindKey(KeyEvent.VK_ESCAPE, new QuitCommand(applicationContext));

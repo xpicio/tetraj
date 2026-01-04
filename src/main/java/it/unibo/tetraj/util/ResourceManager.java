@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -42,6 +43,11 @@ public final class ResourceManager {
   private static final Map<String, Image> IMAGE_CACHE = new HashMap<>();
   private static final Map<String, Clip> SOUND_CACHE = new HashMap<>();
   private static volatile ResourceManager instance;
+  // Background music management
+  private Clip backgroundMusic;
+  private float musicVolume = 0.4f; // Default 40% volume
+  private int pausedPosition = 0;
+  private boolean isPaused = false;
 
   /** Private constructor for singleton pattern. */
   private ResourceManager() {
@@ -131,6 +137,87 @@ public final class ResourceManager {
   }
 
   /**
+   * Plays background music in continuous loop with default volume. Stops any currently playing
+   * background music before starting new one.
+   *
+   * @param musicName The music file to play in loop
+   */
+  public void playBackgroundMusic(String musicName) {
+    playBackgroundMusic(musicName, musicVolume);
+  }
+
+  /**
+   * Plays background music in continuous loop with specified volume. Stops any currently playing
+   * background music before starting new one.
+   *
+   * @param musicName The music file to play in loop
+   * @param volume Volume level from 0.0 (mute) to 1.0 (max)
+   */
+  public void playBackgroundMusic(final String musicName, final float volume) {
+    stopBackgroundMusic();
+
+    backgroundMusic = loadSound(musicName);
+    if (backgroundMusic != null) {
+      try {
+        // Set volume
+        final FloatControl volumeControl =
+            (FloatControl) backgroundMusic.getControl(FloatControl.Type.MASTER_GAIN);
+        final float dB = (float) (Math.log10(volume) * 20.0);
+        volumeControl.setValue(dB);
+        // Start looping
+        backgroundMusic.setFramePosition(0);
+        backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+        LOGGER.info("Started background music: {}", musicName);
+      } catch (final IllegalArgumentException e) {
+        LOGGER.warn("Volume control not available for: {}", musicName);
+        // Play anyway without volume control
+        backgroundMusic.setFramePosition(0);
+        backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+      }
+    }
+  }
+
+  /** Stops the currently playing background music. */
+  public void stopBackgroundMusic() {
+    if (backgroundMusic != null) {
+      backgroundMusic.stop();
+      backgroundMusic.setFramePosition(0);
+      pausedPosition = 0;
+      isPaused = false;
+      LOGGER.info("Stopped background music");
+    }
+  }
+
+  /** Pauses the currently playing background music. */
+  public void pauseBackgroundMusic() {
+    if (backgroundMusic != null && backgroundMusic.isRunning()) {
+      pausedPosition = backgroundMusic.getFramePosition();
+      backgroundMusic.stop();
+      isPaused = true;
+      LOGGER.info("Paused background music at frame: {}", pausedPosition);
+    }
+  }
+
+  /** Resumes the paused background music. */
+  public void resumeBackgroundMusic() {
+    if (backgroundMusic != null && isPaused) {
+      backgroundMusic.setFramePosition(pausedPosition);
+      backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+      isPaused = false;
+      LOGGER.info("Resumed background music from frame: {}", pausedPosition);
+    }
+  }
+
+  /**
+   * Checks if background music is currently playing.
+   *
+   * @return true if music is playing, false otherwise
+   */
+  public boolean isBackgroundMusicPlaying() {
+    return backgroundMusic != null && backgroundMusic.isRunning();
+  }
+
+  /**
    * Preloads all essential resources. Call this during game initialization for smoother gameplay.
    */
   public void preloadResources() {
@@ -151,6 +238,13 @@ public final class ResourceManager {
   /** Clears all caches to free memory. */
   public void clearCaches() {
     LOGGER.info("Clearing resource caches...");
+
+    // Stop background music
+    stopBackgroundMusic();
+    if (backgroundMusic != null) {
+      backgroundMusic.close();
+      backgroundMusic = null;
+    }
 
     FONT_CACHE.clear();
     IMAGE_CACHE.clear();
@@ -178,18 +272,18 @@ public final class ResourceManager {
 
   /** Preloads sound effects. */
   private void preloadSounds() {
+    // Background music
+    loadSound("playLoop.wav");
+    loadSound("menuLoop.wav");
     // Gameplay sounds
     loadSound("drop.wav");
     loadSound("rotate.wav");
     loadSound("move.wav");
-
     // Scoring sounds
     loadSound("clear.wav");
-    loadSound("tetris.wav");
     loadSound("levelUp.wav");
-
     // UI sounds
-    loadSound("gameover.wav");
+    loadSound("gameOver.wav");
     loadSound("pause.wav");
     loadSound("menuSelect.wav");
   }
