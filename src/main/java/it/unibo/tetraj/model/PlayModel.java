@@ -5,6 +5,7 @@ import it.unibo.tetraj.model.piece.TetrominoFactory;
 import it.unibo.tetraj.model.piece.selection.BagRandomizerStrategy;
 import it.unibo.tetraj.util.ResourceManager;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /** Model for the playing state. Manages game logic and state. */
@@ -258,7 +259,7 @@ public final class PlayModel {
    * @return The current piece or null
    */
   public AbstractTetromino<?> getCurrentPiece() {
-    return currentPiece.copy();
+    return Optional.ofNullable(currentPiece).map(AbstractTetromino::copy).orElse(null);
   }
 
   /**
@@ -267,7 +268,7 @@ public final class PlayModel {
    * @return The next piece or null
    */
   public AbstractTetromino<?> getNextPiece() {
-    return nextPiece.copy();
+    return Optional.ofNullable(nextPiece).map(AbstractTetromino::copy).orElse(null);
   }
 
   /**
@@ -276,7 +277,7 @@ public final class PlayModel {
    * @return The held piece or null
    */
   public AbstractTetromino<?> getHeldPiece() {
-    return heldPiece.copy();
+    return Optional.ofNullable(heldPiece).map(AbstractTetromino::copy).orElse(null);
   }
 
   /**

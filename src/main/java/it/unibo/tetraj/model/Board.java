@@ -2,8 +2,8 @@ package it.unibo.tetraj.model;
 
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /** Represents the Tetris game board. Standard Tetris board is 10 cells wide and 20 cells high. */
 public final class Board {
@@ -94,52 +94,13 @@ public final class Board {
    * @return The list of row indices that were cleared
    */
   public List<Integer> clearCompletedLines() {
-    final List<Integer> clearedLines = new ArrayList<>();
-
-    for (int row = height - 1; row >= 0; row--) {
-      if (isLineFull(row)) {
-        clearedLines.add(row);
-      }
-    }
-
-    // Remove cleared lines and shift down
-    for (final int row : clearedLines) {
-      removeLine(row);
-    }
-
+    final List<Integer> clearedLines =
+        IntStream.iterate(height - 1, i -> i >= 0, i -> i - 1)
+            .filter(this::isLineFull)
+            .boxed()
+            .toList();
+    clearedLines.stream().mapToInt(Integer::intValue).forEach(this::removeLine);
     return clearedLines;
-  }
-
-  /**
-   * Checks if a line is full.
-   *
-   * @param row The row index to check
-   * @return true if the line is full
-   */
-  private boolean isLineFull(final int row) {
-    for (int col = 0; col < width; col++) {
-      if (cells[row][col] == null) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Removes a line and shifts all lines above it down.
-   *
-   * @param row The row index to remove
-   */
-  private void removeLine(final int row) {
-    // Shift all rows above down by one
-    for (int r = row; r > 0; r--) {
-      System.arraycopy(cells[r - 1], 0, cells[r], 0, width);
-    }
-
-    // Clear top row
-    for (int col = 0; col < width; col++) {
-      cells[0][col] = null;
-    }
   }
 
   /**
@@ -196,5 +157,28 @@ public final class Board {
    */
   public int getHeight() {
     return height;
+  }
+
+  /** Checks if a line is full. */
+  private boolean isLineFull(final int row) {
+    for (int col = 0; col < width; col++) {
+      if (cells[row][col] == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** Removes a line and shifts all lines above it down. */
+  private void removeLine(final int row) {
+    // Shift all rows above down by one
+    for (int r = row; r > 0; r--) {
+      System.arraycopy(cells[r - 1], 0, cells[r], 0, width);
+    }
+
+    // Clear top row
+    for (int col = 0; col < width; col++) {
+      cells[0][col] = null;
+    }
   }
 }

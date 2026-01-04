@@ -42,12 +42,12 @@ public final class ResourceManager {
   private static final Map<FontKey, Font> FONT_CACHE = new HashMap<>();
   private static final Map<String, Image> IMAGE_CACHE = new HashMap<>();
   private static final Map<String, Clip> SOUND_CACHE = new HashMap<>();
-  private static volatile ResourceManager instance;
+  private static final ResourceManager INSTANCE = new ResourceManager();
   // Background music management
+  private static final float DEFAULT_MUSIC_VOLUME = 0.4f;
   private Clip backgroundMusic;
-  private float musicVolume = 0.4f; // Default 40% volume
-  private int pausedPosition = 0;
-  private boolean isPaused = false;
+  private volatile int pausedPosition;
+  private volatile boolean isPaused;
 
   /** Private constructor for singleton pattern. */
   private ResourceManager() {
@@ -60,14 +60,7 @@ public final class ResourceManager {
    * @return The resource manager instance
    */
   public static ResourceManager getInstance() {
-    if (instance == null) {
-      synchronized (ResourceManager.class) {
-        if (instance == null) {
-          instance = new ResourceManager();
-        }
-      }
-    }
-    return instance;
+    return INSTANCE;
   }
 
   /**
@@ -142,8 +135,8 @@ public final class ResourceManager {
    *
    * @param musicName The music file to play in loop
    */
-  public void playBackgroundMusic(String musicName) {
-    playBackgroundMusic(musicName, musicVolume);
+  public void playBackgroundMusic(final String musicName) {
+    playBackgroundMusic(musicName, DEFAULT_MUSIC_VOLUME);
   }
 
   /**
