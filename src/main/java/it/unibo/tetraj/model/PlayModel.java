@@ -214,7 +214,11 @@ public final class PlayModel {
     final List<Integer> clearedLines = board.clearCompletedLines();
     if (!clearedLines.isEmpty()) {
       updateScore(clearedLines.size());
-      resources.playSound("clear.wav");
+      if (clearedLines.size() == 4) {
+        resources.playSound("clearForLines.wav");
+      } else {
+        resources.playSound("clear.wav");
+      }
     }
 
     currentPiece = nextPiece;
