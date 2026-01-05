@@ -2,8 +2,9 @@ package it.unibo.tetraj.model;
 
 import it.unibo.tetraj.model.piece.AbstractTetromino;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /** Represents the Tetris game board. Standard Tetris board is 10 cells wide and 20 cells high. */
 public final class Board {
@@ -94,12 +95,24 @@ public final class Board {
    * @return The list of row indices that were cleared
    */
   public List<Integer> clearCompletedLines() {
-    final List<Integer> clearedLines =
-        IntStream.iterate(height - 1, i -> i >= 0, i -> i - 1)
-            .filter(this::isLineFull)
-            .boxed()
-            .toList();
-    clearedLines.stream().mapToInt(Integer::intValue).forEach(this::removeLine);
+    final List<Integer> clearedLines = new ArrayList<>();
+    int destRow = height - 1;
+
+    for (int sourceRow = height - 1; sourceRow >= 0; sourceRow--) {
+      if (isLineFull(sourceRow)) {
+        clearedLines.add(sourceRow);
+      } else {
+        if (destRow != sourceRow) {
+          cells[destRow] = cells[sourceRow].clone();
+        }
+        destRow--;
+      }
+    }
+    // Clear remaining top rows
+    while (destRow >= 0) {
+      Arrays.fill(cells[destRow], null);
+      destRow--;
+    }
     return clearedLines;
   }
 
@@ -172,22 +185,5 @@ public final class Board {
       }
     }
     return true;
-  }
-
-  /**
-   * Removes a line and shifts all lines above it down.
-   *
-   * @param row The row index to remove
-   */
-  private void removeLine(final int row) {
-    // Shift all rows above down by one
-    for (int r = row; r > 0; r--) {
-      System.arraycopy(cells[r - 1], 0, cells[r], 0, width);
-    }
-
-    // Clear top row
-    for (int col = 0; col < width; col++) {
-      cells[0][col] = null;
-    }
   }
 }
