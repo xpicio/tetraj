@@ -67,6 +67,10 @@ tasks.withType<Test>().configureEach {
     }
 }
 
+tasks.shadowJar {
+    dependsOn(tasks.check)
+}
+
 // Spotless formatter
 spotless {
     java {
