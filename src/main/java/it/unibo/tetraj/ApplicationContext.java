@@ -3,7 +3,6 @@ package it.unibo.tetraj;
 import it.unibo.tetraj.controller.Controller;
 import it.unibo.tetraj.controller.GameOverController;
 import it.unibo.tetraj.controller.MenuController;
-import it.unibo.tetraj.controller.PauseController;
 import it.unibo.tetraj.controller.PlayController;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
@@ -104,13 +103,11 @@ public final class ApplicationContext {
     // Create all controllers
     final Controller menuController = new MenuController(this);
     final Controller playController = new PlayController(this);
-    final Controller pauseController = new PauseController(this);
     final Controller gameOverController = new GameOverController(this);
 
     // Register controllers with state manager
     stateManager.registerController(GameState.MENU, menuController);
     stateManager.registerController(GameState.PLAYING, playController);
-    stateManager.registerController(GameState.PAUSED, pauseController);
     stateManager.registerController(GameState.GAME_OVER, gameOverController);
 
     // Create game engine with configured state manager

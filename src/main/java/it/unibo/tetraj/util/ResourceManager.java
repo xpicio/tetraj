@@ -281,7 +281,8 @@ public final class ResourceManager {
     loadSound("levelUp.wav");
     // UI sounds
     loadSound("gameOver.wav");
-    loadSound("pause.wav");
+    loadSound("pauseIn.wav");
+    loadSound("pauseOut.wav");
     loadSound("menuSelect.wav");
   }
 

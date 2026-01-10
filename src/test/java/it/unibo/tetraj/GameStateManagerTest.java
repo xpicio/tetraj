@@ -26,7 +26,6 @@ class GameStateManagerTest {
   private GameStateManager stateManager;
   @Mock private Controller menuController;
   @Mock private Controller playController;
-  @Mock private Controller pauseController;
   @Mock private Controller gameOverController;
 
   @BeforeEach
@@ -37,7 +36,6 @@ class GameStateManagerTest {
     // Register mock controllers
     stateManager.registerController(GameState.MENU, menuController);
     stateManager.registerController(GameState.PLAYING, playController);
-    stateManager.registerController(GameState.PAUSED, pauseController);
     stateManager.registerController(GameState.GAME_OVER, gameOverController);
   }
 
@@ -106,38 +104,20 @@ class GameStateManagerTest {
   }
 
   @Test
-  @DisplayName("should not allow invalid transition from MENU to PAUSED")
+  @DisplayName("should not allow invalid transition from MENU to GAME_OVER")
   void shouldNotAllowInvalidTransitionFromMenuToPaused() {
     // Arrange
     stateManager.switchTo(GameState.MENU);
-    reset(menuController, pauseController);
+    reset(menuController, gameOverController);
 
     // Act
-    final boolean result = stateManager.switchTo(GameState.PAUSED);
+    final boolean result = stateManager.switchTo(GameState.GAME_OVER);
 
     // Assert
-    assertFalse(result, "Should not allow transition from MENU to PAUSED");
+    assertFalse(result, "Should not allow transition from MENU to GAME_OVER");
     assertEquals(GameState.MENU, stateManager.getCurrentState());
     verify(menuController, never()).exit();
-    verifyNoInteractions(pauseController);
-  }
-
-  @Test
-  @DisplayName("should allow valid transition from PLAYING to PAUSED")
-  void shouldAllowValidTransitionFromPlayingToPaused() {
-    // Arrange
-    stateManager.switchTo(GameState.MENU);
-    stateManager.switchTo(GameState.PLAYING);
-    reset(playController, pauseController);
-
-    // Act
-    final boolean result = stateManager.switchTo(GameState.PAUSED);
-
-    // Assert
-    assertTrue(result, "Should allow transition from PLAYING to PAUSED");
-    assertEquals(GameState.PAUSED, stateManager.getCurrentState());
-    verify(playController, times(1)).exit();
-    verify(pauseController, times(1)).enter();
+    verifyNoInteractions(gameOverController);
   }
 
   @Test
@@ -156,25 +136,6 @@ class GameStateManagerTest {
     assertEquals(GameState.GAME_OVER, stateManager.getCurrentState());
     verify(playController, times(1)).exit();
     verify(gameOverController, times(1)).enter();
-  }
-
-  @Test
-  @DisplayName("should allow valid transition from PAUSED to PLAYING")
-  void shouldAllowValidTransitionFromPausedToPlaying() {
-    // Arrange
-    stateManager.switchTo(GameState.MENU);
-    stateManager.switchTo(GameState.PLAYING);
-    stateManager.switchTo(GameState.PAUSED);
-    reset(pauseController, playController);
-
-    // Act
-    final boolean result = stateManager.switchTo(GameState.PLAYING);
-
-    // Assert
-    assertTrue(result, "Should allow transition from PAUSED to PLAYING");
-    assertEquals(GameState.PLAYING, stateManager.getCurrentState());
-    verify(pauseController, times(1)).exit();
-    verify(playController, times(1)).enter();
   }
 
   @Test
@@ -213,25 +174,6 @@ class GameStateManagerTest {
     assertEquals(GameState.PLAYING, stateManager.getCurrentState());
     verify(gameOverController, times(1)).exit();
     verify(playController, times(1)).enter();
-  }
-
-  @Test
-  @DisplayName("should not allow invalid transition from PAUSED to GAME_OVER")
-  void shouldNotAllowInvalidTransitionFromPausedToGameOver() {
-    // Arrange
-    stateManager.switchTo(GameState.MENU);
-    stateManager.switchTo(GameState.PLAYING);
-    stateManager.switchTo(GameState.PAUSED);
-    reset(pauseController, gameOverController);
-
-    // Act
-    final boolean result = stateManager.switchTo(GameState.GAME_OVER);
-
-    // Assert
-    assertFalse(result, "Should not allow transition from PAUSED to GAME_OVER");
-    assertEquals(GameState.PAUSED, stateManager.getCurrentState());
-    verify(pauseController, never()).exit();
-    verifyNoInteractions(gameOverController);
   }
 
   @Test
@@ -287,22 +229,9 @@ class GameStateManagerTest {
     // Arrange - done in setUp()
 
     // Act & Assert
-    assertTrue(stateManager.isValidTransition(GameState.PLAYING, GameState.PAUSED));
     assertTrue(stateManager.isValidTransition(GameState.PLAYING, GameState.GAME_OVER));
     assertTrue(stateManager.isValidTransition(GameState.PLAYING, GameState.MENU));
     assertFalse(stateManager.isValidTransition(GameState.PLAYING, GameState.PLAYING));
-  }
-
-  @Test
-  @DisplayName("should validate all transitions from PAUSED state")
-  void shouldValidateAllTransitionsFromPausedState() {
-    // Arrange - done in setUp()
-
-    // Act & Assert
-    assertTrue(stateManager.isValidTransition(GameState.PAUSED, GameState.PLAYING));
-    assertTrue(stateManager.isValidTransition(GameState.PAUSED, GameState.MENU));
-    assertFalse(stateManager.isValidTransition(GameState.PAUSED, GameState.GAME_OVER));
-    assertFalse(stateManager.isValidTransition(GameState.PAUSED, GameState.PAUSED));
   }
 
   @Test
@@ -312,7 +241,6 @@ class GameStateManagerTest {
 
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.MENU, GameState.PLAYING));
-    assertFalse(stateManager.isValidTransition(GameState.MENU, GameState.PAUSED));
     assertFalse(stateManager.isValidTransition(GameState.MENU, GameState.GAME_OVER));
     assertFalse(stateManager.isValidTransition(GameState.MENU, GameState.MENU));
   }
@@ -325,8 +253,6 @@ class GameStateManagerTest {
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.MENU));
     assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.PLAYING));
-    assertFalse(stateManager.isValidTransition(GameState.GAME_OVER, GameState.PAUSED));
-    assertFalse(stateManager.isValidTransition(GameState.GAME_OVER, GameState.GAME_OVER));
   }
 
   @Test

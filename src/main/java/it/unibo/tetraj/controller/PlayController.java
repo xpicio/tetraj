@@ -114,12 +114,18 @@ public final class PlayController implements Controller {
 
     // P to pause playing
     inputHandler.bindKey(
-        KeyEvent.VK_P,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.PAUSED));
+        KeyEvent.VK_P, new PlayCommand(model, PlayModel::togglePause, "togglePause"));
 
-    // ESC to quit playing
+    // ESC to quit playing or resume pause
     inputHandler.bindKey(
         KeyEvent.VK_ESCAPE,
-        new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
+        () -> {
+          if (model.isPaused()) {
+            model.togglePause();
+          } else {
+            new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU)
+                .execute();
+          }
+        });
   }
 }

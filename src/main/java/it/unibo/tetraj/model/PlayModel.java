@@ -26,6 +26,7 @@ public final class PlayModel {
   private int linesCleared;
   private double fallTimer;
   private double fallSpeed;
+  private boolean paused;
   private boolean gameOver;
 
   /** Creates a new play model. */
@@ -39,14 +40,9 @@ public final class PlayModel {
   /** Starts a new game. */
   public void startNewGame() {
     board.clear();
-    score = 0;
     level = 1;
-    linesCleared = 0;
-    fallTimer = 0;
     fallSpeed = BASE_FALL_SPEED;
     canHold = true;
-    heldPiece = null;
-    gameOver = false;
 
     currentPiece = tetrominoFactory.create();
     centerPieceToTop(currentPiece);
@@ -60,7 +56,7 @@ public final class PlayModel {
    * @param deltaTime Time elapsed since last update in seconds
    */
   public void update(final double deltaTime) {
-    if (gameOver) {
+    if (gameOver || paused) {
       return;
     }
 
@@ -82,6 +78,19 @@ public final class PlayModel {
   public void moveRight() {
     if (tryMove(1, 0)) {
       resources.playSound("move.wav");
+    }
+  }
+
+  /**
+   * Toggles the pause state of the game. When pausing, plays the pause-out sound effect. When
+   * resuming, plays the pause-in sound effect.
+   */
+  public void togglePause() {
+    paused = !paused;
+    if (paused) {
+      resources.playSound("pauseOut.wav");
+    } else {
+      resources.playSound("pauseIn.wav");
     }
   }
 
@@ -150,6 +159,105 @@ public final class PlayModel {
       heldPiece = temp;
       centerPieceToTop(currentPiece);
     }
+  }
+
+  /**
+   * Gets the game board.
+   *
+   * @return The game board
+   */
+  public Board getBoard() {
+    return board;
+  }
+
+  /**
+   * Gets the current piece.
+   *
+   * @return The current piece or null
+   */
+  public AbstractTetromino<?> getCurrentPiece() {
+    return Optional.ofNullable(currentPiece).map(AbstractTetromino::copy).orElse(null);
+  }
+
+  /**
+   * Gets the next piece.
+   *
+   * @return The next piece or null
+   */
+  public AbstractTetromino<?> getNextPiece() {
+    return Optional.ofNullable(nextPiece).map(AbstractTetromino::copy).orElse(null);
+  }
+
+  /**
+   * Gets the held piece.
+   *
+   * @return The held piece or null
+   */
+  public AbstractTetromino<?> getHeldPiece() {
+    return Optional.ofNullable(heldPiece).map(AbstractTetromino::copy).orElse(null);
+  }
+
+  /**
+   * Gets a ghost piece showing where the current piece will land.
+   *
+   * @return The ghost piece or null
+   */
+  public AbstractTetromino<?> getGhostPiece() {
+    if (currentPiece == null) {
+      return null;
+    }
+
+    final AbstractTetromino<?> ghost = currentPiece.copy();
+    while (board.isValidPosition(ghost)) {
+      ghost.move(0, 1);
+    }
+    ghost.move(0, -1);
+    return ghost;
+  }
+
+  /**
+   * Gets the current score.
+   *
+   * @return The score
+   */
+  public int getScore() {
+    return score;
+  }
+
+  /**
+   * Gets the current level.
+   *
+   * @return The level
+   */
+  public int getLevel() {
+    return level;
+  }
+
+  /**
+   * Gets total lines cleared.
+   *
+   * @return The lines cleared
+   */
+  public int getLinesCleared() {
+    return linesCleared;
+  }
+
+  /**
+   * Checks if the game is over.
+   *
+   * @return true if game is over, false otherwise
+   */
+  public boolean isGameOver() {
+    return gameOver;
+  }
+
+  /**
+   * Checks if the game is currently paused.
+   *
+   * @return true if the game is paused, false otherwise
+   */
+  public boolean isPaused() {
+    return paused;
   }
 
   private boolean tryRotate(
@@ -246,95 +354,5 @@ public final class PlayModel {
 
   private void centerPieceToTop(final AbstractTetromino<?> tetromino) {
     tetromino.setPosition((board.getWidth() - tetromino.getWidth()) / 2, 0);
-  }
-
-  /**
-   * Gets the game board.
-   *
-   * @return The game board
-   */
-  public Board getBoard() {
-    return board;
-  }
-
-  /**
-   * Gets the current piece.
-   *
-   * @return The current piece or null
-   */
-  public AbstractTetromino<?> getCurrentPiece() {
-    return Optional.ofNullable(currentPiece).map(AbstractTetromino::copy).orElse(null);
-  }
-
-  /**
-   * Gets the next piece.
-   *
-   * @return The next piece or null
-   */
-  public AbstractTetromino<?> getNextPiece() {
-    return Optional.ofNullable(nextPiece).map(AbstractTetromino::copy).orElse(null);
-  }
-
-  /**
-   * Gets the held piece.
-   *
-   * @return The held piece or null
-   */
-  public AbstractTetromino<?> getHeldPiece() {
-    return Optional.ofNullable(heldPiece).map(AbstractTetromino::copy).orElse(null);
-  }
-
-  /**
-   * Gets a ghost piece showing where the current piece will land.
-   *
-   * @return The ghost piece or null
-   */
-  public AbstractTetromino<?> getGhostPiece() {
-    if (currentPiece == null) {
-      return null;
-    }
-
-    final AbstractTetromino<?> ghost = currentPiece.copy();
-    while (board.isValidPosition(ghost)) {
-      ghost.move(0, 1);
-    }
-    ghost.move(0, -1);
-    return ghost;
-  }
-
-  /**
-   * Gets the current score.
-   *
-   * @return The score
-   */
-  public int getScore() {
-    return score;
-  }
-
-  /**
-   * Gets the current level.
-   *
-   * @return The level
-   */
-  public int getLevel() {
-    return level;
-  }
-
-  /**
-   * Gets total lines cleared.
-   *
-   * @return The lines cleared
-   */
-  public int getLinesCleared() {
-    return linesCleared;
-  }
-
-  /**
-   * Checks if the game is over.
-   *
-   * @return true if game is over
-   */
-  public boolean isGameOver() {
-    return gameOver;
   }
 }

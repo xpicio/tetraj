@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
+import java.util.List;
 
 /** View for the playing state. Renders the Tetris game. */
 public final class PlayView {
@@ -21,6 +22,8 @@ public final class PlayView {
   private static final int CELL_SIZE = 30;
   private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final int FONT_SIZE = 16;
+  private static final int PAUSED_TITLE_FONT_SIZE = 48;
+  private static final float PAUSED_OVERLAY_ALPHA = 0.80f;
   private final Canvas canvas;
   private final ResourceManager resources;
   private BufferStrategy bufferStrategy;
@@ -173,6 +176,7 @@ public final class PlayView {
       drawNextPiece(g, model.getNextPiece());
       drawHeldPiece(g, model.getHeldPiece());
       drawGameInfo(g, model);
+      drawPause(g, model);
     }
 
     private void drawBoard(final Graphics2D g, final Board board) {
@@ -299,6 +303,20 @@ public final class PlayView {
       g.drawString("LINES", gameInfoPanelX, linesY);
       g.drawString(
           String.valueOf(model.getLinesCleared()), gameInfoPanelX, linesY + SCORE_VALUE_OFFSET);
+    }
+
+    private void drawPause(final Graphics2D g, final PlayModel model) {
+      if (model.isPaused()) {
+        RenderUtils.drawOverlay(g, WIDTH, HEIGHT, PAUSED_OVERLAY_ALPHA);
+        g.setColor(TEXT_COLOR);
+        g.setFont(gameFont);
+        RenderUtils.drawCenteredTextBlock(
+            g,
+            List.of("PAUSED", "Press P or ESC to resume"),
+            resources.getPressStart2PFont(PAUSED_TITLE_FONT_SIZE),
+            WIDTH,
+            HEIGHT);
+      }
     }
   }
 }
