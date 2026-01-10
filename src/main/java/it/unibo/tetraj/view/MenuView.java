@@ -20,7 +20,7 @@ public final class MenuView {
 
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
-  private static final float BG_OVERLAY_ALPHA = 0.80f;
+  private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
   private static final float TITLE_SIZE = 72f;
   private static final float HEADER_SIZE = 24f;
   private static final float TEXT_SIZE = 18f;
@@ -101,7 +101,8 @@ public final class MenuView {
         g.drawImage(backgroundImage, x, y, newWidth, newHeight, null);
 
         // Add semi-transparent overlay for text readability
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, BG_OVERLAY_ALPHA));
+        g.setComposite(
+            AlphaComposite.getInstance(AlphaComposite.SRC_OVER, BACKGROUND_OVERLAY_ALPHA));
         g.setColor(new Color(0, 0, 0));
         g.fillRect(0, 0, WIDTH, HEIGHT);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
@@ -174,7 +175,7 @@ public final class MenuView {
     final String appTitle = model.getAppTitle();
     g.setColor(HEADER_COLOR);
     g.setFont(titleFont);
-    drawCenteredString(g, appTitle.toUpperCase(java.util.Locale.ROOT), TITLE_Y);
+    RenderUtils.drawCenteredString(g, WIDTH, TITLE_Y, appTitle.toUpperCase(java.util.Locale.ROOT));
   }
 
   /**
@@ -190,13 +191,13 @@ public final class MenuView {
     // Controls header
     g.setColor(HEADER_COLOR);
     g.setFont(headerFont);
-    drawCenteredString(g, controls.header(), y);
+    RenderUtils.drawCenteredString(g, WIDTH, y, controls.header());
 
     y += SECTION_SPACING;
 
     // Controls section
     g.setFont(textFont);
-    drawCenteredString(g, controls.sectionTitle(), y);
+    RenderUtils.drawCenteredString(g, WIDTH, y, controls.sectionTitle());
 
     y += LINE_HEIGHT + 10;
 
@@ -205,14 +206,14 @@ public final class MenuView {
 
     // Movement controls
     for (final Controls.ControlBinding binding : controls.movements()) {
-      drawCenteredString(g, binding.toString(), y);
+      RenderUtils.drawCenteredString(g, WIDTH, y, binding.toString());
       y += LINE_HEIGHT;
     }
 
     // Action controls
     y += LINE_HEIGHT + 10;
     for (final Controls.ControlBinding binding : controls.actions()) {
-      drawCenteredString(g, binding.toString(), y);
+      RenderUtils.drawCenteredString(g, WIDTH, y, binding.toString());
       y += LINE_HEIGHT;
     }
   }
@@ -230,14 +231,9 @@ public final class MenuView {
     g.setColor(CREDITS_COLOR);
     g.setFont(creditsFont);
     // First line of credits
-    drawCenteredString(g, credits.getFirstLine(), y);
+    RenderUtils.drawCenteredString(g, WIDTH, y, credits.getFirstLine());
     // Second line of credits
     y += CREDITS_LINE_HEIGHT;
-    drawCenteredString(g, credits.getSecondLine(), y);
-  }
-
-  private void drawCenteredString(final Graphics2D g, final String text, final int y) {
-    final int x = (WIDTH - g.getFontMetrics().stringWidth(text)) / 2;
-    g.drawString(text, x, y);
+    RenderUtils.drawCenteredString(g, WIDTH, y, credits.getSecondLine());
   }
 }

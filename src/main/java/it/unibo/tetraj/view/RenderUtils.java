@@ -1,0 +1,185 @@
+package it.unibo.tetraj.view;
+
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.util.List;
+
+/**
+ * Utility class for common rendering operations in views. Provides methods for text rendering,
+ * centering, and overlay effects.
+ */
+public final class RenderUtils {
+
+  private static final int DEFAULT_ROW_SPACING = 20;
+  private static final int TITLE_ROW_SPACING = 30;
+  private static final int MIN_ALPHA = 0;
+  private static final int MAX_ALPHA = 1;
+
+  /** Private constructor to prevent instantiation. */
+  private RenderUtils() {
+    throw new UnsupportedOperationException("Utility class cannot be instantiated");
+  }
+
+  /**
+   * Draws a vertically and horizontally centered text block. Supports an optional title font for
+   * the first line.
+   *
+   * @param g The graphics context
+   * @param lines The lines of text to draw
+   * @param titleFont Font for the first line, null for uniform font
+   * @param canvasWidth The width of the canvas for centering
+   * @param canvasHeight The height of the canvas for centering
+   */
+  public static void drawCenteredTextBlock(
+      final Graphics2D g,
+      final List<String> lines,
+      final Font titleFont,
+      final int canvasWidth,
+      final int canvasHeight) {
+    if (lines.isEmpty()) {
+      return;
+    }
+
+    final Font originalFont = g.getFont();
+    final boolean hasTitle = titleFont != null;
+    // Calculate metrics for both fonts
+    final FontMetrics titleMetrics = hasTitle ? g.getFontMetrics(titleFont) : null;
+    final FontMetrics textMetrics = g.getFontMetrics(originalFont);
+    // Calculate total height
+    final int rowSpacing = hasTitle ? TITLE_ROW_SPACING : DEFAULT_ROW_SPACING;
+    final int totalHeight =
+        calculateTotalHeight(lines, hasTitle, titleMetrics, textMetrics, rowSpacing);
+    // Calculate starting Y position for vertical centering
+    final int centerY = canvasHeight / 2;
+    final int startY = centerY - totalHeight / 2;
+
+    // Draw each line
+    drawLines(g, titleFont, originalFont, hasTitle, startY, rowSpacing, canvasWidth, lines);
+    // Restore original font
+    g.setFont(originalFont);
+  }
+
+  /**
+   * Draws a single horizontally centered string.
+   *
+   * @param g The graphics context
+   * @param canvasWidth The width of the canvas for centering
+   * @param y The Y coordinate for the baseline
+   * @param text The text to draw
+   */
+  public static void drawCenteredString(
+      final Graphics2D g, final int canvasWidth, final int y, final String text) {
+    final FontMetrics fm = g.getFontMetrics();
+    final int x = (canvasWidth - fm.stringWidth(text)) / 2;
+    g.drawString(text, x, y);
+  }
+
+  /**
+   * Creates a semi-transparent overlay effect using AlphaComposite. Useful for pause screens,
+   * modals, etc.
+   *
+   * @param g The graphics context
+   * @param width The width of the overlay
+   * @param height The height of the overlay
+   * @param alpha The transparency (0-1, where 0 is transparent and 1 is opaque)
+   */
+  public static void drawOverlay(
+      final Graphics2D g, final int width, final int height, final float alpha) {
+    final Composite originalComposite = g.getComposite();
+    g.setComposite(
+        AlphaComposite.getInstance(
+            AlphaComposite.SRC_OVER, Math.min(MAX_ALPHA, Math.max(MIN_ALPHA, alpha))));
+    g.setColor(Color.BLACK);
+    g.fillRect(0, 0, width, height);
+    g.setComposite(originalComposite);
+  }
+
+  /**
+   * Calculates the total height needed for a text block.
+   *
+   * @param lines The lines of text to measure
+   * @param hasTitle Whether the first line uses a title font
+   * @param titleMetrics Font metrics for the title font
+   * @param textMetrics Font metrics for regular text
+   * @param rowSpacing Spacing between rows
+   * @return The total height in pixels needed for the text block
+   */
+  private static int calculateTotalHeight(
+      final List<String> lines,
+      final boolean hasTitle,
+      final FontMetrics titleMetrics,
+      final FontMetrics textMetrics,
+      final int rowSpacing) {
+    if (lines.isEmpty()) {
+      return 0;
+    }
+
+    int height = 0;
+
+    if (hasTitle && titleMetrics != null) {
+      // Title line height
+      height += titleMetrics.getHeight();
+      // Remaining lines
+      if (lines.size() > 1) {
+        height += rowSpacing; // Space after title
+        height += (lines.size() - 1) * textMetrics.getHeight();
+        height += (lines.size() - 2) * DEFAULT_ROW_SPACING; // Spaces between text lines
+      }
+    } else {
+      // All lines with same font
+      height = lines.size() * textMetrics.getHeight();
+      if (lines.size() > 1) {
+        height += (lines.size() - 1) * rowSpacing;
+      }
+    }
+    return height;
+  }
+
+  /**
+   * Draws the lines with appropriate fonts and spacing.
+   *
+   * @param g The graphics context
+   * @param titleFont Font for the title (first line)
+   * @param textFont Font for regular text
+   * @param hasTitle Whether to use title font for first line
+   * @param startY Starting Y coordinate
+   * @param rowSpacing Spacing between rows
+   * @param canvasWidth Width of the canvas for centering
+   * @param lines The lines of text to draw
+   */
+  private static void drawLines(
+      final Graphics2D g,
+      final Font titleFont,
+      final Font textFont,
+      final boolean hasTitle,
+      final int startY,
+      final int rowSpacing,
+      final int canvasWidth,
+      final List<String> lines) {
+    int currentY = startY;
+
+    for (int i = 0; i < lines.size(); i++) {
+      final boolean isTitle = hasTitle && i == 0;
+      // Set appropriate font
+      if (isTitle) {
+        g.setFont(titleFont);
+      } else {
+        g.setFont(textFont);
+      }
+      // Get metrics for current font
+      final FontMetrics metrics = g.getFontMetrics();
+      // Position and draw the line
+      currentY += metrics.getAscent();
+      drawCenteredString(g, canvasWidth, currentY, lines.get(i));
+      currentY += metrics.getDescent();
+      // Add spacing for next line (if not last)
+      if (i < lines.size() - 1) {
+        currentY += isTitle ? rowSpacing : DEFAULT_ROW_SPACING;
+      }
+    }
+  }
+}
