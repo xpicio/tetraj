@@ -1,6 +1,7 @@
 package it.unibo.tetraj.view;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import it.unibo.tetraj.util.ApplicationProperties;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,21 +13,24 @@ import java.awt.image.BufferStrategy;
 /** View for the game over state. Simple implementation showing "GAME OVER". */
 public class GameOverView {
 
-  private static final int WIDTH = 1024;
-  private static final int HEIGHT = 768;
   private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final Color TEXT_COLOR = Color.RED;
-  // Font sizes
   private static final int TITLE_FONT_SIZE = 48;
   private static final int INFO_FONT_SIZE = 20;
   private static final int INFO_Y_OFFSET = 50;
+  private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private BufferStrategy bufferStrategy;
+  private final int windowWidth;
+  private final int windowHeight;
 
   /** Creates a new game over view. */
   public GameOverView() {
+    applicationProperties = ApplicationProperties.getInstance();
+    windowWidth = applicationProperties.getWindowWidth();
+    windowHeight = applicationProperties.getWindowHeight();
     canvas = new Canvas();
-    canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+    canvas.setPreferredSize(new Dimension(windowWidth, windowHeight));
     canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);
   }
@@ -55,20 +59,20 @@ public class GameOverView {
 
       // Clear screen
       g.setColor(BACKGROUND_COLOR);
-      g.fillRect(0, 0, WIDTH, HEIGHT);
+      g.fillRect(0, 0, windowWidth, windowHeight);
 
       // Draw state text
       g.setColor(TEXT_COLOR);
       g.setFont(new Font("Arial", Font.BOLD, TITLE_FONT_SIZE));
       final String text = "GAME OVER";
       final int textWidth = g.getFontMetrics().stringWidth(text);
-      g.drawString(text, (WIDTH - textWidth) / 2, HEIGHT / 2);
+      g.drawString(text, (windowWidth - textWidth) / 2, windowHeight / 2);
 
       // Draw instructions
       g.setFont(new Font("Arial", Font.PLAIN, INFO_FONT_SIZE));
       final String inst = "Press ENTER to restart, ESC for menu";
       final int instWidth = g.getFontMetrics().stringWidth(inst);
-      g.drawString(inst, (WIDTH - instWidth) / 2, HEIGHT / 2 + INFO_Y_OFFSET);
+      g.drawString(inst, (windowWidth - instWidth) / 2, windowHeight / 2 + INFO_Y_OFFSET);
 
       bufferStrategy.show();
     } finally {

@@ -3,6 +3,7 @@ package it.unibo.tetraj.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -13,6 +14,8 @@ public final class ApplicationProperties {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationProperties.class);
   private static final String PROPERTIES_FILE = "/app.properties";
+  private static final int DEFAULT_WINDOW_WIDTH = 800;
+  private static final int DEFAULT_WINDOW_HEIGHT = 600;
   private static final ApplicationProperties INSTANCE = new ApplicationProperties();
   private final Properties properties;
 
@@ -104,6 +107,28 @@ public final class ApplicationProperties {
    */
   public String getAuthorUniversity() {
     return properties.getProperty("author.university", "Università di Bologna");
+  }
+
+  /**
+   * Gets the window width.
+   *
+   * @return The window width
+   */
+  public int getWindowWidth() {
+    return Optional.ofNullable(properties.getProperty("window.width"))
+        .map(Integer::parseInt)
+        .orElse(DEFAULT_WINDOW_WIDTH);
+  }
+
+  /**
+   * Gets the window height.
+   *
+   * @return The window height
+   */
+  public int getWindowHeight() {
+    return Optional.ofNullable(properties.getProperty("window.height"))
+        .map(Integer::parseInt)
+        .orElse(DEFAULT_WINDOW_HEIGHT);
   }
 
   /** Loads properties from file or sets defaults. */

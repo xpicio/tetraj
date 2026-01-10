@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.model.MenuModel.Controls;
 import it.unibo.tetraj.model.MenuModel.Credits;
+import it.unibo.tetraj.util.ApplicationProperties;
 import it.unibo.tetraj.util.ResourceManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
@@ -18,8 +19,6 @@ import java.awt.image.BufferStrategy;
 /** View for the main menu state. Handles rendering with custom graphics and fonts. */
 public final class MenuView {
 
-  private static final int WIDTH = 1024;
-  private static final int HEIGHT = 768;
   private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
   private static final float TITLE_SIZE = 72f;
   private static final float HEADER_SIZE = 24f;
@@ -35,6 +34,7 @@ public final class MenuView {
   private static final Color TEXT_COLOR = Color.WHITE;
   private static final Color HEADER_COLOR = new Color(255, 220, 100);
   private static final Color CREDITS_COLOR = new Color(200, 200, 200);
+  private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private BufferStrategy bufferStrategy;
   private Image backgroundImage;
@@ -42,11 +42,16 @@ public final class MenuView {
   private Font headerFont;
   private Font textFont;
   private Font creditsFont;
+  private final int windowWidth;
+  private final int windowHeight;
 
   /** Creates a new menu view. */
   public MenuView() {
+    applicationProperties = ApplicationProperties.getInstance();
+    windowWidth = applicationProperties.getWindowWidth();
+    windowHeight = applicationProperties.getWindowHeight();
     canvas = new Canvas();
-    canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+    canvas.setPreferredSize(new Dimension(windowWidth, windowHeight));
     canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);
     preloadResources();
@@ -84,7 +89,7 @@ public final class MenuView {
 
       // Clear screen
       g.setColor(Color.BLACK);
-      g.fillRect(0, 0, WIDTH, HEIGHT);
+      g.fillRect(0, 0, windowWidth, windowHeight);
 
       // Draw background image if loaded
       if (backgroundImage != null) {
@@ -92,19 +97,20 @@ public final class MenuView {
         // Use Math.max to ensure the image fills the largest dimension
         final int imgWidth = backgroundImage.getWidth(null);
         final int imgHeight = backgroundImage.getHeight(null);
-        final double scale = Math.max((double) WIDTH / imgWidth, (double) HEIGHT / imgHeight);
+        final double scale =
+            Math.max((double) windowWidth / imgWidth, (double) windowHeight / imgHeight);
         // Calculate new dimensions keeping aspect ratio
         final int newWidth = (int) (imgWidth * scale);
         final int newHeight = (int) (imgHeight * scale);
-        final int x = (WIDTH - newWidth) / 2;
-        final int y = HEIGHT - newHeight;
+        final int x = (windowWidth - newWidth) / 2;
+        final int y = windowHeight - newHeight;
         g.drawImage(backgroundImage, x, y, newWidth, newHeight, null);
 
         // Add semi-transparent overlay for text readability
         g.setComposite(
             AlphaComposite.getInstance(AlphaComposite.SRC_OVER, BACKGROUND_OVERLAY_ALPHA));
         g.setColor(new Color(0, 0, 0));
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.fillRect(0, 0, windowWidth, windowHeight);
         g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
       }
 
@@ -139,7 +145,7 @@ public final class MenuView {
    * @return The width
    */
   public int getWidth() {
-    return WIDTH;
+    return windowWidth;
   }
 
   /**
@@ -148,7 +154,7 @@ public final class MenuView {
    * @return The height
    */
   public int getHeight() {
-    return HEIGHT;
+    return windowHeight;
   }
 
   /** Preloads all resources needed for the menu. */
@@ -175,7 +181,8 @@ public final class MenuView {
     final String appTitle = model.getAppTitle();
     g.setColor(HEADER_COLOR);
     g.setFont(titleFont);
-    RenderUtils.drawCenteredString(g, WIDTH, TITLE_Y, appTitle.toUpperCase(java.util.Locale.ROOT));
+    RenderUtils.drawCenteredString(
+        g, windowWidth, TITLE_Y, appTitle.toUpperCase(java.util.Locale.ROOT));
   }
 
   /**
@@ -191,13 +198,13 @@ public final class MenuView {
     // Controls header
     g.setColor(HEADER_COLOR);
     g.setFont(headerFont);
-    RenderUtils.drawCenteredString(g, WIDTH, y, controls.header());
+    RenderUtils.drawCenteredString(g, windowWidth, y, controls.header());
 
     y += SECTION_SPACING;
 
     // Controls section
     g.setFont(textFont);
-    RenderUtils.drawCenteredString(g, WIDTH, y, controls.sectionTitle());
+    RenderUtils.drawCenteredString(g, windowWidth, y, controls.sectionTitle());
 
     y += LINE_HEIGHT + 10;
 
@@ -206,14 +213,14 @@ public final class MenuView {
 
     // Movement controls
     for (final Controls.ControlBinding binding : controls.movements()) {
-      RenderUtils.drawCenteredString(g, WIDTH, y, binding.toString());
+      RenderUtils.drawCenteredString(g, windowWidth, y, binding.toString());
       y += LINE_HEIGHT;
     }
 
     // Action controls
     y += LINE_HEIGHT + 10;
     for (final Controls.ControlBinding binding : controls.actions()) {
-      RenderUtils.drawCenteredString(g, WIDTH, y, binding.toString());
+      RenderUtils.drawCenteredString(g, windowWidth, y, binding.toString());
       y += LINE_HEIGHT;
     }
   }
@@ -226,14 +233,14 @@ public final class MenuView {
    */
   private void drawCredits(final Graphics2D g, final MenuModel model) {
     final Credits credits = model.getCredits();
-    int y = HEIGHT - CREDITS_BOTTOM_OFFSET;
+    int y = windowHeight - CREDITS_BOTTOM_OFFSET;
 
     g.setColor(CREDITS_COLOR);
     g.setFont(creditsFont);
     // First line of credits
-    RenderUtils.drawCenteredString(g, WIDTH, y, credits.getFirstLine());
+    RenderUtils.drawCenteredString(g, windowWidth, y, credits.getFirstLine());
     // Second line of credits
     y += CREDITS_LINE_HEIGHT;
-    RenderUtils.drawCenteredString(g, WIDTH, y, credits.getSecondLine());
+    RenderUtils.drawCenteredString(g, windowWidth, y, credits.getSecondLine());
   }
 }

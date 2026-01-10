@@ -4,6 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import it.unibo.tetraj.model.Board;
 import it.unibo.tetraj.model.PlayModel;
 import it.unibo.tetraj.model.piece.AbstractTetromino;
+import it.unibo.tetraj.util.ApplicationProperties;
 import it.unibo.tetraj.util.ResourceManager;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -17,24 +18,28 @@ import java.util.List;
 /** View for the playing state. Renders the Tetris game. */
 public final class PlayView {
 
-  private static final int WIDTH = 1024;
-  private static final int HEIGHT = 768;
   private static final int CELL_SIZE = 30;
   private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final int FONT_SIZE = 16;
   private static final int PAUSED_TITLE_FONT_SIZE = 48;
   private static final float PAUSED_OVERLAY_ALPHA = 0.80f;
+  private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private final ResourceManager resources;
   private BufferStrategy bufferStrategy;
   private Font gameFont;
   private BoardRenderer renderer;
+  private final int windowWidth;
+  private final int windowHeight;
 
   /** Creates a new play view. */
   public PlayView() {
+    applicationProperties = ApplicationProperties.getInstance();
+    windowWidth = applicationProperties.getWindowWidth();
+    windowHeight = applicationProperties.getWindowHeight();
     canvas = new Canvas();
     resources = ResourceManager.getInstance();
-    canvas.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+    canvas.setPreferredSize(new Dimension(windowWidth, windowHeight));
     canvas.setBackground(BACKGROUND_COLOR);
     canvas.setFocusable(true);
     loadFonts();
@@ -75,7 +80,7 @@ public final class PlayView {
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
       g.setColor(BACKGROUND_COLOR);
-      g.fillRect(0, 0, WIDTH, HEIGHT);
+      g.fillRect(0, 0, windowWidth, windowHeight);
 
       renderer.render(g, model);
 
@@ -144,9 +149,9 @@ public final class PlayView {
 
       // Calculate centered board position
       final int totalContentWidth = boardPixelWidth + PADDING + GAME_INFO_PANEL_WIDTH;
-      final int contentStartX = (WIDTH - totalContentWidth) / 2;
+      final int contentStartX = (windowWidth - totalContentWidth) / 2;
       boardX = contentStartX;
-      boardY = (HEIGHT - boardPixelHeight) / 2;
+      boardY = (windowHeight - boardPixelHeight) / 2;
 
       // Game info panel position
       gameInfoPanelX = boardX + boardPixelWidth + PADDING;
@@ -307,15 +312,15 @@ public final class PlayView {
 
     private void drawPause(final Graphics2D g, final PlayModel model) {
       if (model.isPaused()) {
-        RenderUtils.drawOverlay(g, WIDTH, HEIGHT, PAUSED_OVERLAY_ALPHA);
+        RenderUtils.drawOverlay(g, windowWidth, windowHeight, PAUSED_OVERLAY_ALPHA);
         g.setColor(TEXT_COLOR);
         g.setFont(gameFont);
         RenderUtils.drawCenteredTextBlock(
             g,
             List.of("PAUSED", "Press P or ESC to resume"),
             resources.getPressStart2PFont(PAUSED_TITLE_FONT_SIZE),
-            WIDTH,
-            HEIGHT);
+            windowWidth,
+            windowHeight);
       }
     }
   }
