@@ -79,7 +79,6 @@ public class GameOverController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_ENTER,
         new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING));
-
     // ESC to return to menu
     inputHandler.bindKey(
         KeyEvent.VK_ESCAPE,

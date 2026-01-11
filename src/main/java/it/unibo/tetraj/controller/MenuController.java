@@ -89,7 +89,6 @@ public class MenuController implements Controller {
           new StateTransitionCommand(applicationContext.getStateManager(), GameState.PLAYING)
               .execute();
         });
-
     // ESC to quit
     inputHandler.bindKey(KeyEvent.VK_ESCAPE, new QuitCommand(applicationContext));
   }

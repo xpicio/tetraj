@@ -155,6 +155,8 @@ public final class RenderUtils {
     try {
       g = (Graphics2D) bufferStrategy.getDrawGraphics();
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(
+          RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
       g.setColor(backgroundColor);
       g.fillRect(0, 0, width, height);
 
@@ -168,7 +170,17 @@ public final class RenderUtils {
     }
   }
 
-  /** Calculates the total height needed for a text block. */
+  /**
+   * Calculates the total height needed for a text block. Takes into account different font sizes
+   * for title and text lines, as well as spacing between lines.
+   *
+   * @param lines The lines of text to measure
+   * @param hasTitle Whether the first line should be treated as a title
+   * @param titleMetrics Font metrics for the title font, can be null if no title
+   * @param textMetrics Font metrics for regular text lines
+   * @param rowSpacing Spacing in pixels between rows
+   * @return The total height in pixels needed to render all lines
+   */
   private static int calculateTotalHeight(
       final List<String> lines,
       final boolean hasTitle,
@@ -200,7 +212,19 @@ public final class RenderUtils {
     return height;
   }
 
-  /** Draws the lines with appropriate fonts and spacing. */
+  /**
+   * Draws the lines with appropriate fonts and spacing.
+   *
+   * @param g The graphics context
+   * @param titleFont Font for the title (first line)
+   * @param titleFontColor Color for the title text
+   * @param textFont Font for regular text
+   * @param hasTitle Whether to use title font for first line
+   * @param startY Starting Y coordinate
+   * @param rowSpacing Spacing between rows
+   * @param canvasWidth Width of the canvas for centering
+   * @param lines The lines of text to draw
+   */
   private static void drawLines(
       final Graphics2D g,
       final Font titleFont,

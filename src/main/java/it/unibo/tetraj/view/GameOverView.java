@@ -17,10 +17,10 @@ public class GameOverView {
 
   private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
-  private static final Color TITLE_TEXT_COLOR = Color.RED;
+  private static final Color TITLE_TEXT_COLOR = new Color(220, 40, 40);
   private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
-  private static final int TITLE_FONT_SIZE = 48;
-  private static final int DEFAULT_FONT_SIZE = 18;
+  private static final float TITLE_FONT_SIZE = 48f;
+  private static final float DEFAULT_FONT_SIZE = 18f;
   private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private final int windowWidth;

@@ -9,31 +9,32 @@ import it.unibo.tetraj.util.ResourceManager;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.image.BufferStrategy;
 
 /** View for the main menu state. Handles rendering with custom graphics and fonts. */
 public final class MenuView {
 
+  private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
   private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
-  private static final float TITLE_SIZE = 72f;
-  private static final float HEADER_SIZE = 24f;
-  private static final float TEXT_SIZE = 18f;
-  private static final float CREDITS_SIZE = 12f;
-  private static final int LINE_HEIGHT = 25;
+  private static final Color TITLE_TEXT_COLOR = new Color(255, 220, 100);
+  private static final Color HEADER_TEXT_COLOR = new Color(255, 220, 100);
+  private static final Color CREDITS_TEXT_COLOR = new Color(200, 200, 200);
+  private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
+  private static final float TITLE_FONT_SIZE = 72f;
+  private static final float HEADER_FONT_SIZE = 24f;
+  private static final float CREDITS_FONT_SIZE = 12f;
+  private static final float DEFAULT_FONT_SIZE = 18f;
+  private static final int CONTROLS_SPACING = 25;
   private static final int SECTION_SPACING = 40;
+  private static final int CREDITS_LINE_SPACING = 15;
   private static final int TITLE_Y = 120;
   private static final int CONTROLS_Y = 220;
   private static final int CREDITS_BOTTOM_OFFSET = 40;
-  private static final int CREDITS_LINE_HEIGHT = 15;
-  private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
-  private static final Color TEXT_COLOR = Color.WHITE;
-  private static final Color HEADER_COLOR = new Color(255, 220, 100);
-  private static final Color CREDITS_COLOR = new Color(200, 200, 200);
   private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private BufferStrategy bufferStrategy;
@@ -78,53 +79,40 @@ public final class MenuView {
       }
     }
 
-    Graphics2D g = null;
-    try {
-      g = (Graphics2D) bufferStrategy.getDrawGraphics();
+    RenderUtils.renderWithGraphics(
+        bufferStrategy,
+        BACKGROUND_COLOR,
+        windowWidth,
+        windowHeight,
+        g -> {
+          // Draw background image if loaded
+          if (backgroundImage != null) {
+            // Calculate scale factor to cover the entire screen (like CSS: background-size: cover)
+            // Use Math.max to ensure the image fills the largest dimension
+            final int imgWidth = backgroundImage.getWidth(null);
+            final int imgHeight = backgroundImage.getHeight(null);
+            final double scale =
+                Math.max((double) windowWidth / imgWidth, (double) windowHeight / imgHeight);
+            // Calculate new dimensions keeping aspect ratio
+            final int newWidth = (int) (imgWidth * scale);
+            final int newHeight = (int) (imgHeight * scale);
+            final int x = (windowWidth - newWidth) / 2;
+            final int y = windowHeight - newHeight;
+            final Composite originalComposite = g.getComposite();
 
-      // Enable anti-aliasing for smooth text
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      g.setRenderingHint(
-          RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-      // Clear screen
-      g.setColor(Color.BLACK);
-      g.fillRect(0, 0, windowWidth, windowHeight);
-
-      // Draw background image if loaded
-      if (backgroundImage != null) {
-        // Calculate scale factor to cover the entire screen (like CSS: background-size: cover)
-        // Use Math.max to ensure the image fills the largest dimension
-        final int imgWidth = backgroundImage.getWidth(null);
-        final int imgHeight = backgroundImage.getHeight(null);
-        final double scale =
-            Math.max((double) windowWidth / imgWidth, (double) windowHeight / imgHeight);
-        // Calculate new dimensions keeping aspect ratio
-        final int newWidth = (int) (imgWidth * scale);
-        final int newHeight = (int) (imgHeight * scale);
-        final int x = (windowWidth - newWidth) / 2;
-        final int y = windowHeight - newHeight;
-        g.drawImage(backgroundImage, x, y, newWidth, newHeight, null);
-
-        // Add semi-transparent overlay for text readability
-        g.setComposite(
-            AlphaComposite.getInstance(AlphaComposite.SRC_OVER, BACKGROUND_OVERLAY_ALPHA));
-        g.setColor(new Color(0, 0, 0));
-        g.fillRect(0, 0, windowWidth, windowHeight);
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
-      }
-
-      // Draw menu content
-      drawTitle(g, model);
-      drawControls(g, model);
-      drawCredits(g, model);
-
-      bufferStrategy.show();
-    } finally {
-      if (g != null) {
-        g.dispose();
-      }
-    }
+            g.drawImage(backgroundImage, x, y, newWidth, newHeight, null);
+            // Add semi-transparent overlay for text readability
+            g.setComposite(
+                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, BACKGROUND_OVERLAY_ALPHA));
+            g.setColor(new Color(0, 0, 0));
+            g.fillRect(0, 0, windowWidth, windowHeight);
+            g.setComposite(originalComposite);
+          }
+          // Draw menu content
+          drawTitle(g, model);
+          drawControls(g, model);
+          drawCredits(g, model);
+        });
   }
 
   /**
@@ -164,10 +152,10 @@ public final class MenuView {
     // Load background image
     backgroundImage = resources.loadImage("splashScreenBackground.png");
     // Load fonts
-    titleFont = resources.getPressStart2PFont(TITLE_SIZE);
-    headerFont = resources.getPressStart2PFont(HEADER_SIZE);
-    textFont = resources.getPressStart2PFont(TEXT_SIZE);
-    creditsFont = resources.getPressStart2PFont(CREDITS_SIZE);
+    titleFont = resources.getPressStart2PFont(TITLE_FONT_SIZE);
+    headerFont = resources.getPressStart2PFont(HEADER_FONT_SIZE);
+    textFont = resources.getPressStart2PFont(DEFAULT_FONT_SIZE);
+    creditsFont = resources.getPressStart2PFont(CREDITS_FONT_SIZE);
   }
 
   /**
@@ -179,7 +167,7 @@ public final class MenuView {
   private void drawTitle(final Graphics2D g, final MenuModel model) {
     final String appTitle = model.getAppTitle();
 
-    g.setColor(HEADER_COLOR);
+    g.setColor(TITLE_TEXT_COLOR);
     g.setFont(titleFont);
     RenderUtils.drawCenteredString(
         g, windowWidth, TITLE_Y, appTitle.toUpperCase(java.util.Locale.ROOT));
@@ -196,26 +184,26 @@ public final class MenuView {
     int y = CONTROLS_Y;
 
     // Controls header
-    g.setColor(HEADER_COLOR);
+    g.setColor(HEADER_TEXT_COLOR);
     g.setFont(headerFont);
     RenderUtils.drawCenteredString(g, windowWidth, y, controls.header());
     y += SECTION_SPACING;
     // Controls section
     g.setFont(textFont);
     RenderUtils.drawCenteredString(g, windowWidth, y, controls.sectionTitle());
-    y += LINE_HEIGHT + 10;
-    g.setColor(TEXT_COLOR);
+    y += CONTROLS_SPACING + 10;
+    g.setColor(DEFAULT_TEXT_COLOR);
     g.setFont(textFont);
     // Movement controls
     for (final Controls.ControlBinding binding : controls.movements()) {
       RenderUtils.drawCenteredString(g, windowWidth, y, binding.toString());
-      y += LINE_HEIGHT;
+      y += CONTROLS_SPACING;
     }
     // Action controls
-    y += LINE_HEIGHT + 10;
+    y += CONTROLS_SPACING + 10;
     for (final Controls.ControlBinding binding : controls.actions()) {
       RenderUtils.drawCenteredString(g, windowWidth, y, binding.toString());
-      y += LINE_HEIGHT;
+      y += CONTROLS_SPACING;
     }
   }
 
@@ -229,12 +217,12 @@ public final class MenuView {
     final Credits credits = model.getCredits();
     int y = windowHeight - CREDITS_BOTTOM_OFFSET;
 
-    g.setColor(CREDITS_COLOR);
+    g.setColor(CREDITS_TEXT_COLOR);
     g.setFont(creditsFont);
     // First line of credits
     RenderUtils.drawCenteredString(g, windowWidth, y, credits.getFirstLine());
     // Second line of credits
-    y += CREDITS_LINE_HEIGHT;
+    y += CREDITS_LINE_SPACING;
     RenderUtils.drawCenteredString(g, windowWidth, y, credits.getSecondLine());
   }
 }

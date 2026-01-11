@@ -19,11 +19,11 @@ import java.util.List;
 /** View for the playing state. Renders the Tetris game. */
 public final class PlayView {
 
-  private static final int CELL_SIZE = 30;
   private static final Color BACKGROUND_COLOR = new Color(20, 20, 30);
-  private static final int FONT_SIZE = 16;
-  private static final int PAUSED_TITLE_FONT_SIZE = 48;
-  private static final float PAUSED_OVERLAY_ALPHA = 0.80f;
+  private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
+  private static final float TITLE_FONT_SIZE = 48f;
+  private static final float DEFAULT_FONT_SIZE = 18f;
+  private static final int BOARD_CELL_SIZE = 30;
   private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private final ResourceManager resources;
@@ -47,7 +47,7 @@ public final class PlayView {
   }
 
   private void loadFonts() {
-    gameFont = resources.getPressStart2PFont(FONT_SIZE);
+    gameFont = resources.getPressStart2PFont(DEFAULT_FONT_SIZE);
   }
 
   private void initialize() {
@@ -74,23 +74,14 @@ public final class PlayView {
     if (renderer == null) {
       renderer = new BoardRenderer(model.getBoard());
     }
-
-    Graphics2D g = null;
-    try {
-      g = (Graphics2D) bufferStrategy.getDrawGraphics();
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-      g.setColor(BACKGROUND_COLOR);
-      g.fillRect(0, 0, windowWidth, windowHeight);
-
-      renderer.render(g, model);
-
-      bufferStrategy.show();
-    } finally {
-      if (g != null) {
-        g.dispose();
-      }
-    }
+    RenderUtils.renderWithGraphics(
+        bufferStrategy,
+        BACKGROUND_COLOR,
+        windowWidth,
+        windowHeight,
+        g -> {
+          renderer.render(g, model);
+        });
   }
 
   /**
@@ -136,6 +127,10 @@ public final class PlayView {
    * based on board dimensions.
    */
   private class BoardRenderer {
+    private static final Color BOARD_BACKGROUND_COLOR = new Color(10, 10, 15);
+    private static final Color GRID_COLOR = new Color(40, 40, 50);
+    private static final Color GHOST_PIECE_COLOR = new Color(255, 255, 255, 60);
+    private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
     private static final int TEXT_OFFSET = 20;
     private static final int SCORE_VALUE_OFFSET = 25;
     private static final int BOX_OFFSET = 10;
@@ -143,10 +138,6 @@ public final class PlayView {
     private static final int GAME_INFO_PANEL_WIDTH = 200;
     private static final int INFO_BLOCK_SPACING = 35;
     private static final int NEXT_HOLD_SPACING = 115;
-    private static final Color BOARD_BACKGROUND_COLOR = new Color(10, 10, 15);
-    private static final Color GRID_COLOR = new Color(40, 40, 50);
-    private static final Color GHOST_ALPHA = new Color(255, 255, 255, 60);
-    private static final Color TEXT_COLOR = Color.WHITE;
     private final int boardWidthCells;
     private final int boardHeightCells;
     private final int boardPixelWidth;
@@ -171,24 +162,22 @@ public final class PlayView {
       // Calculate pixel dimensions for board
       boardWidthCells = board.getWidth();
       boardHeightCells = board.getHeight();
-      boardPixelWidth = boardWidthCells * CELL_SIZE;
-      boardPixelHeight = boardHeightCells * CELL_SIZE;
+      boardPixelWidth = boardWidthCells * BOARD_CELL_SIZE;
+      boardPixelHeight = boardHeightCells * BOARD_CELL_SIZE;
 
       // Calculate centered board position
       final int totalContentWidth = boardPixelWidth + PADDING + GAME_INFO_PANEL_WIDTH;
       final int contentStartX = (windowWidth - totalContentWidth) / 2;
+
       boardX = contentStartX;
       boardY = (windowHeight - boardPixelHeight) / 2;
-
       // Game info panel position
       gameInfoPanelX = boardX + boardPixelWidth + PADDING;
-
       // Next and hold positions aligned with board top
       nextY = boardY + TEXT_OFFSET;
       nextBoxY = nextY + BOX_OFFSET;
       holdY = nextY + NEXT_HOLD_SPACING;
       holdBoxY = holdY + BOX_OFFSET;
-
       // Score/Level/Lines aligned with board bottom
       linesY = boardY + boardPixelHeight - TEXT_OFFSET;
       levelY = linesY - INFO_BLOCK_SPACING * 2;
@@ -215,28 +204,24 @@ public final class PlayView {
       // Board background
       g.setColor(BOARD_BACKGROUND_COLOR);
       g.fillRect(boardX, boardY, boardPixelWidth, boardPixelHeight);
-
       // Grid lines
       g.setColor(GRID_COLOR);
-
       // Horizontal lines
       for (int row = 0; row <= boardHeightCells; row++) {
-        final int y = boardY + row * CELL_SIZE;
+        final int y = boardY + row * BOARD_CELL_SIZE;
         g.drawLine(boardX, y, boardX + boardPixelWidth, y);
       }
-
       // Vertical lines
       for (int col = 0; col <= boardWidthCells; col++) {
-        final int x = boardX + col * CELL_SIZE;
+        final int x = boardX + col * BOARD_CELL_SIZE;
         g.drawLine(x, boardY, x, boardY + boardPixelHeight);
       }
-
       // Draw placed pieces
       for (int row = 0; row < boardHeightCells; row++) {
         for (int col = 0; col < boardWidthCells; col++) {
           final Color cellColor = board.getCellColor(row, col);
           if (cellColor != null) {
-            drawCell(g, boardX + col * CELL_SIZE, boardY + row * CELL_SIZE, cellColor);
+            drawCell(g, boardX + col * BOARD_CELL_SIZE, boardY + row * BOARD_CELL_SIZE, cellColor);
           }
         }
       }
@@ -247,8 +232,9 @@ public final class PlayView {
         return;
       }
 
-      final int x = boardX + piece.getX() * CELL_SIZE;
-      final int y = boardY + piece.getY() * CELL_SIZE;
+      final int x = boardX + piece.getX() * BOARD_CELL_SIZE;
+      final int y = boardY + piece.getY() * BOARD_CELL_SIZE;
+
       drawTetromino(g, piece, x, y, piece.getColor());
     }
 
@@ -257,26 +243,25 @@ public final class PlayView {
         return;
       }
 
-      final int x = boardX + ghost.getX() * CELL_SIZE;
-      final int y = boardY + ghost.getY() * CELL_SIZE;
-      drawTetromino(g, ghost, x, y, GHOST_ALPHA);
+      final int x = boardX + ghost.getX() * BOARD_CELL_SIZE;
+      final int y = boardY + ghost.getY() * BOARD_CELL_SIZE;
+
+      drawTetromino(g, ghost, x, y, GHOST_PIECE_COLOR);
     }
 
     private void drawNextPiece(final Graphics2D g, final AbstractTetromino<?> next) {
-      g.setColor(TEXT_COLOR);
+      g.setColor(DEFAULT_TEXT_COLOR);
       g.setFont(gameFont);
       g.drawString("NEXT", gameInfoPanelX, nextY);
-
       if (next != null) {
         drawTetrominoPreview(g, next, gameInfoPanelX, nextBoxY);
       }
     }
 
     private void drawHeldPiece(final Graphics2D g, final AbstractTetromino<?> held) {
-      g.setColor(TEXT_COLOR);
+      g.setColor(DEFAULT_TEXT_COLOR);
       g.setFont(gameFont);
       g.drawString("HOLD", gameInfoPanelX, holdY);
-
       if (held != null) {
         drawTetrominoPreview(g, held, gameInfoPanelX, holdBoxY);
       }
@@ -292,7 +277,7 @@ public final class PlayView {
       for (int row = 0; row < shape.length; row++) {
         for (int col = 0; col < shape[row].length; col++) {
           if (shape[row][col] != 0) {
-            drawCell(g, x + col * CELL_SIZE, y + row * CELL_SIZE, color);
+            drawCell(g, x + col * BOARD_CELL_SIZE, y + row * BOARD_CELL_SIZE, color);
           }
         }
       }
@@ -306,31 +291,26 @@ public final class PlayView {
     private void drawCell(final Graphics2D g, final int x, final int y, final Color color) {
       // Main cell body
       g.setColor(color);
-      g.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
-
+      g.fillRect(x + 1, y + 1, BOARD_CELL_SIZE - 2, BOARD_CELL_SIZE - 2);
       // Light edges (top and left) for 3D effect
       g.setColor(color.brighter());
-      g.drawLine(x + 1, y + 1, x + CELL_SIZE - 2, y + 1);
-      g.drawLine(x + 1, y + 1, x + 1, y + CELL_SIZE - 2);
-
+      g.drawLine(x + 1, y + 1, x + BOARD_CELL_SIZE - 2, y + 1);
+      g.drawLine(x + 1, y + 1, x + 1, y + BOARD_CELL_SIZE - 2);
       // Dark edges (bottom and right) for 3D effect
       g.setColor(color.darker());
-      g.drawLine(x + CELL_SIZE - 1, y + 1, x + CELL_SIZE - 1, y + CELL_SIZE - 1);
-      g.drawLine(x + 1, y + CELL_SIZE - 1, x + CELL_SIZE - 1, y + CELL_SIZE - 1);
+      g.drawLine(x + BOARD_CELL_SIZE - 1, y + 1, x + BOARD_CELL_SIZE - 1, y + BOARD_CELL_SIZE - 1);
+      g.drawLine(x + 1, y + BOARD_CELL_SIZE - 1, x + BOARD_CELL_SIZE - 1, y + BOARD_CELL_SIZE - 1);
     }
 
     private void drawGameInfo(final Graphics2D g, final PlayModel model) {
-      g.setColor(TEXT_COLOR);
+      g.setColor(DEFAULT_TEXT_COLOR);
       g.setFont(gameFont);
-
       // Score
       g.drawString("SCORE", gameInfoPanelX, scoreY);
       g.drawString(String.valueOf(model.getScore()), gameInfoPanelX, scoreY + SCORE_VALUE_OFFSET);
-
       // Level
       g.drawString("LEVEL", gameInfoPanelX, levelY);
       g.drawString(String.valueOf(model.getLevel()), gameInfoPanelX, levelY + SCORE_VALUE_OFFSET);
-
       // Lines
       g.drawString("LINES", gameInfoPanelX, linesY);
       g.drawString(
@@ -339,13 +319,13 @@ public final class PlayView {
 
     private void drawPause(final Graphics2D g, final PlayModel model) {
       if (model.isPaused()) {
-        RenderUtils.drawOverlay(g, windowWidth, windowHeight, PAUSED_OVERLAY_ALPHA);
-        g.setColor(TEXT_COLOR);
+        RenderUtils.drawOverlay(g, windowWidth, windowHeight, BACKGROUND_OVERLAY_ALPHA);
+        g.setColor(DEFAULT_TEXT_COLOR);
         g.setFont(gameFont);
         RenderUtils.drawCenteredTextBlock(
             g,
             List.of("PAUSED", "Press P or ESC to resume"),
-            resources.getPressStart2PFont(PAUSED_TITLE_FONT_SIZE),
+            resources.getPressStart2PFont(TITLE_FONT_SIZE),
             windowWidth,
             windowHeight);
       }

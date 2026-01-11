@@ -70,7 +70,6 @@ public final class PlayController implements Controller {
   @Override
   public void update(final float deltaTime) {
     model.update(deltaTime);
-
     if (model.isGameOver()) {
       applicationContext.getStateManager().switchTo(GameState.GAME_OVER);
     }
@@ -99,26 +98,21 @@ public final class PlayController implements Controller {
     // LEFT or A to move piece left
     inputHandler.bindKey(KeyEvent.VK_LEFT, new PlayCommand(model, PlayModel::moveLeft, "moveLeft"));
     inputHandler.bindKey(KeyEvent.VK_A, new PlayCommand(model, PlayModel::moveLeft, "moveLeft"));
-
     // RIGHT or D to move piece right
     inputHandler.bindKey(
         KeyEvent.VK_RIGHT, new PlayCommand(model, PlayModel::moveRight, "moveRight"));
     inputHandler.bindKey(KeyEvent.VK_D, new PlayCommand(model, PlayModel::moveRight, "moveRight"));
-
     // DOWN or S to soft drop
     inputHandler.bindKey(KeyEvent.VK_DOWN, new PlayCommand(model, PlayModel::moveDown, "moveDown"));
     inputHandler.bindKey(KeyEvent.VK_S, new PlayCommand(model, PlayModel::moveDown, "moveDown"));
-
     // SPACE to hard drop
     inputHandler.bindKey(
         KeyEvent.VK_SPACE, new PlayCommand(model, PlayModel::hardDrop, "hardDrop"));
-
     // UP or W to rotate clockwise
     inputHandler.bindKey(
         KeyEvent.VK_UP, new PlayCommand(model, PlayModel::rotateClockwise, "rotateClockwise"));
     inputHandler.bindKey(
         KeyEvent.VK_W, new PlayCommand(model, PlayModel::rotateClockwise, "rotateClockwise"));
-
     // CONTROL or Z to rotate counterclockwise
     inputHandler.bindKey(
         KeyEvent.VK_CONTROL,
@@ -126,16 +120,13 @@ public final class PlayController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_Z,
         new PlayCommand(model, PlayModel::rotatecounterClockwise, "rotatecounterClockwise"));
-
     // SHIFT or C to hold piece
     inputHandler.bindKey(
         KeyEvent.VK_SHIFT, new PlayCommand(model, PlayModel::holdPiece, "holdPiece"));
     inputHandler.bindKey(KeyEvent.VK_C, new PlayCommand(model, PlayModel::holdPiece, "holdPiece"));
-
     // P to pause playing
     inputHandler.bindKey(
         KeyEvent.VK_P, new PlayCommand(model, PlayModel::togglePause, "togglePause"));
-
     // ESC to quit playing or resume pause
     inputHandler.bindKey(
         KeyEvent.VK_ESCAPE,

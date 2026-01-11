@@ -76,6 +76,7 @@ public class GameStateManager {
       LOGGER.error("No controller registered for state: {}", newState);
       return false;
     }
+
     // Exit current state
     if (currentController != null) {
       gameSession = currentController.exit();
