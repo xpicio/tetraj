@@ -40,10 +40,14 @@ public final class PlayModel {
   /** Starts a new game. */
   public void startNewGame() {
     board.clear();
+    score = 0;
     level = 1;
+    linesCleared = 0;
+    fallTimer = 0;
     fallSpeed = BASE_FALL_SPEED;
     canHold = true;
-
+    heldPiece = null;
+    gameOver = false;
     currentPiece = tetrominoFactory.create();
     centerPieceToTop(currentPiece);
     nextPiece = tetrominoFactory.create();
