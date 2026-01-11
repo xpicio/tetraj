@@ -21,8 +21,3 @@ cp build/libs/tetraj-all.jar tetraj.jar
 # Generate Javadoc
 echo "Generating Javadoc..."
 ./gradlew javadoc --no-daemon
-
-# Prepare docs directory
-echo "Preparing documentation..."
-rm -rf docs
-cp -r build/docs/javadoc docs
