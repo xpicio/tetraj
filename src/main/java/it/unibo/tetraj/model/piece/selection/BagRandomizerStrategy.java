@@ -27,9 +27,14 @@ public final class BagRandomizerStrategy implements PieceSelectionStrategy {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BagRandomizerStrategy.class);
   private final List<Class<? extends AbstractTetromino<?>>> bag = new ArrayList<>();
-  private final List<Class<? extends AbstractTetromino<?>>> availableTypes =
-      TetrominoRegistry.getInstance().getAvailableTypes();
+  private final List<Class<? extends AbstractTetromino<?>>> availableTypes;
   private final Random random = new Random();
+
+  /** Creates a new bag randomizer selection strategy. */
+  public BagRandomizerStrategy() {
+    this.availableTypes = TetrominoRegistry.getInstance().getAvailableTypes();
+    LOGGER.debug("Initialized with {} piece types", availableTypes.size());
+  }
 
   @Override
   public Class<? extends AbstractTetromino<?>> next() {

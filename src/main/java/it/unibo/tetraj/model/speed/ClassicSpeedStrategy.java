@@ -12,9 +12,13 @@ public final class ClassicSpeedStrategy implements SpeedStrategy {
     5, 5, 5, 4, 4, 4, 3, 3, 3, 2, // Levels 10-19
     2, 2, 2, 2, 2, 2, 2, 2, 2, 1, // Levels 20-29 (Kill screen!)
   };
-
   private static final double MS_PER_FRAME = 1000.0 / 60.0;
   private static final double SOFT_DROP_MS = 33.33; // fixed at 2 frames per row
+
+  /** Creates a classic speed strategy based on NES Tetris timing. */
+  public ClassicSpeedStrategy() {
+    // All configuration is in static constants
+  }
 
   /** {@inheritDoc} */
   @Override

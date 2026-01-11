@@ -14,6 +14,11 @@ public final class ModernSpeedStrategy implements SpeedStrategy {
   private static final double MIN_SOFT_DROP_MS = 50.0;
   private static final double MIN_FALL_SPEED_MS = 1.0; // Cap at 1ms for level 30+
 
+  /** Creates a modern speed strategy based on Tetris Guideline. */
+  public ModernSpeedStrategy() {
+    // All configuration is in static constants
+  }
+
   /** {@inheritDoc} */
   @Override
   public double getFallSpeed(final int level) {
