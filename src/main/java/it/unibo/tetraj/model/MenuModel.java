@@ -1,5 +1,7 @@
 package it.unibo.tetraj.model;
 
+import it.unibo.tetraj.model.leaderboard.PlayerProfile;
+import it.unibo.tetraj.model.leaderboard.PlayerProfileManager;
 import it.unibo.tetraj.util.ApplicationProperties;
 import java.util.List;
 
@@ -16,12 +18,13 @@ public final class MenuModel {
   /** Creates a new menu model. */
   public MenuModel() {
     final ApplicationProperties props = ApplicationProperties.getInstance();
+    final PlayerProfile playerProfile = PlayerProfileManager.getInstance().getProfile();
 
     title = props.getAppTitle();
     credits = new Credits(props.getAuthor(), props.getAuthorEmail(), props.getAuthorUniversity());
     controls =
         new Controls(
-            "PRESS ENTER TO START",
+            String.format("%s PRESS ENTER TO START", playerProfile.nickname()),
             "CONTROLS",
             List.of(
                 new Controls.ControlBinding("A/D or ← →", "Move"),
@@ -77,7 +80,7 @@ public final class MenuModel {
      * @return The formatted first line
      */
     public String getFirstLine() {
-      return author + " - " + email;
+      return String.format("%s - %s", author, email);
     }
 
     /**
@@ -139,7 +142,7 @@ public final class MenuModel {
       /** {@inheritDoc} */
       @Override
       public String toString() {
-        return keys + " - " + description;
+        return String.format("%s - %s", keys, description);
       }
     }
   }
