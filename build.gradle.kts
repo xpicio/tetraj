@@ -41,10 +41,16 @@ dependencies {
     val log4j2Version = "2.25.2"
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
-    
+    // Bridge: redirige SLF4J calls a log4j2
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version")
+
     // Jackson for JSON serialization (latest stable version as of 2025)
     val jacksonVersion = "2.18.0"
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+
+    // Jedis - Redis client for Java
+    implementation("redis.clients:jedis:5.2.0")
 
     // JUnit API and testing engine
     testImplementation(platform("org.junit:junit-bom:6.0.1"))
@@ -81,6 +87,14 @@ spotless {
         googleJavaFormat("1.17.0")
 
         target("src/**/*.java")
+    }
+}
+
+tasks.processResources {
+    filesMatching("app.properties") {
+        expand(
+            "redisUpstashPassword" to (System.getenv("TETRAJ_REDIS_UPSTASH_PASSWORD") ?: "placeholder")
+        )
     }
 }
 
