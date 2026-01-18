@@ -6,6 +6,7 @@ import it.unibo.tetraj.controller.GameOverController;
 import it.unibo.tetraj.controller.LeaderboardController;
 import it.unibo.tetraj.controller.MenuController;
 import it.unibo.tetraj.controller.PlayController;
+import it.unibo.tetraj.model.leaderboard.Leaderboard;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
@@ -25,6 +26,7 @@ public final class ApplicationContext {
   private static final ApplicationContext INSTANCE = new ApplicationContext();
   private GameEngine gameEngine;
   private GameStateManager stateManager;
+  private Leaderboard leaderboard;
   private volatile boolean shutdownRequested;
   private volatile boolean fromShutdownHook;
 
@@ -54,6 +56,15 @@ public final class ApplicationContext {
    */
   public GameStateManager getStateManager() {
     return stateManager;
+  }
+
+  /**
+   * Gets the leaderboard.
+   *
+   * @return The leaderboard instance
+   */
+  public Leaderboard getLeaderboard() {
+    return leaderboard;
   }
 
   /** Requests application shutdown. */
@@ -114,6 +125,8 @@ public final class ApplicationContext {
   /** Sets up all game components and wires them together. */
   private void setupGameComponents() {
     LOGGER.info("Initializing game components...");
+    // Create leaderboard
+    leaderboard = new Leaderboard();
     // Create state manager
     stateManager = new GameStateManager();
     // Create all controllers

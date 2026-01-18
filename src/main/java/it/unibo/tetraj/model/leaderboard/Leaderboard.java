@@ -11,33 +11,29 @@ import java.util.Optional;
 
 /**
  * Facade for leaderboard operations. Manages provider selection, fallback chain, and provides
- * unified API. Singleton pattern ensures single provider selection for entire app lifecycle.
+ * unified API.
  */
 public final class Leaderboard {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Leaderboard.class);
-  private static final Leaderboard INSTANCE = new Leaderboard();
   private static final int REDIS_DEFAULT_PORT = 6379;
 
   private final List<StorageProvider> providers;
   private StorageProvider activeProvider;
 
-  Leaderboard(final List<StorageProvider> providers) {
+  /**
+   * Creates a leaderboard with custom providers. Used for testing with dependency injection.
+   *
+   * @param providers The list of storage providers to use
+   */
+  public Leaderboard(final List<StorageProvider> providers) {
     this.providers = providers;
     selectActiveProvider();
   }
 
-  private Leaderboard() {
+  /** Creates a leaderboard with default providers (Upstash Redis, local Redis, JSON fallback). */
+  public Leaderboard() {
     this(createDefaultProviders());
-  }
-
-  /**
-   * Gets the singleton instance.
-   *
-   * @return The Leaderboard instance
-   */
-  public static Leaderboard getInstance() {
-    return INSTANCE;
   }
 
   /**

@@ -2,6 +2,7 @@ package it.unibo.tetraj.model.leaderboard;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -61,14 +62,14 @@ class LeaderboardTest {
   }
 
   @Test
-  @DisplayName("should return singleton instance")
-  void shouldReturnSingletonInstance() {
+  @DisplayName("should create independent instances")
+  void shouldCreateIndependentInstances() {
     // Act
-    final Leaderboard instance1 = Leaderboard.getInstance();
-    final Leaderboard instance2 = Leaderboard.getInstance();
+    final Leaderboard instance1 = new Leaderboard(List.of(jsonProvider));
+    final Leaderboard instance2 = new Leaderboard(List.of(jsonProvider));
 
     // Assert
-    assertEquals(instance1, instance2, "Should return same singleton instance");
+    assertNotEquals(instance1, instance2, "Should create independent instances");
   }
 
   @Test

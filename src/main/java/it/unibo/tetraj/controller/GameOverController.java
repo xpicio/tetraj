@@ -7,6 +7,8 @@ import it.unibo.tetraj.GameState;
 import it.unibo.tetraj.InputHandler;
 import it.unibo.tetraj.command.StateTransitionCommand;
 import it.unibo.tetraj.model.GameOverModel;
+import it.unibo.tetraj.model.leaderboard.Leaderboard;
+import it.unibo.tetraj.model.leaderboard.PlayerProfile;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
@@ -46,6 +48,7 @@ public class GameOverController implements Controller {
     resources.playSound("gameOver.wav");
     model = Optional.of(new GameOverModel(gameSession));
     setupKeyBindings();
+    saveScoreIfQualifying(gameSession);
     LOGGER.info("Entering game over state");
   }
 
@@ -93,5 +96,37 @@ public class GameOverController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_ESCAPE,
         new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
+  }
+
+  /**
+   * Saves the score to the leaderboard if it qualifies.
+   *
+   * @param gameSession The game session containing the score
+   */
+  private void saveScoreIfQualifying(final GameSession gameSession) {
+    final Leaderboard leaderboard = applicationContext.getLeaderboard();
+    final PlayerProfile playerProfile = gameSession.playerProfile();
+
+    if (leaderboard.isQualifyingScore(gameSession.score())) {
+      final boolean saved =
+          leaderboard.save(
+              playerProfile.id(),
+              playerProfile.nickname(),
+              gameSession.score(),
+              gameSession.level(),
+              gameSession.linesCleared(),
+              gameSession.getDuration());
+
+      if (saved) {
+        LOGGER.info(
+            "Score {} for player {} saved to leaderboard",
+            gameSession.score(),
+            playerProfile.nickname());
+      } else {
+        LOGGER.error("Failed to save qualifying score to leaderboard");
+      }
+    } else {
+      LOGGER.info("Score {} does not qualify for leaderboard", gameSession.score());
+    }
   }
 }
