@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 
 /** Model for the game over state. Contains final game statistics and background image. */
 public final class GameOverModel {
@@ -92,14 +93,14 @@ public final class GameOverModel {
       // Format duration (MM:ss)
       final long minutes = duration.toMinutes();
       final int seconds = duration.toSecondsPart();
-      final String formattedDuration = String.format("%02d:%02d", minutes, seconds);
+      final String formattedDuration = String.format(Locale.ROOT, "%02d:%02d", minutes, seconds);
       // Format score with thousands separator
-      final String formattedScore = String.format("%,d", score);
+      final String formattedScore = String.format(Locale.ROOT, "%,d", score);
       // Construct the list of lines
       return List.of(
-          String.format("You survived for %s,", formattedDuration),
-          String.format("clearing %d lines to reach level %d", lines, level),
-          String.format("and earning a total of %s points.", formattedScore));
+          String.format(Locale.ROOT, "You survived for %s,", formattedDuration),
+          String.format(Locale.ROOT, "clearing %d lines to reach level %d", lines, level),
+          String.format(Locale.ROOT, "and earning a total of %s points.", formattedScore));
     }
   }
 }

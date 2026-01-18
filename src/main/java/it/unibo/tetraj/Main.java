@@ -1,6 +1,7 @@
 package it.unibo.tetraj;
 
 import it.unibo.tetraj.util.ApplicationProperties;
+import java.util.Locale;
 
 /**
  * Application entry point for Tetraj game.
@@ -34,7 +35,7 @@ public final class Main {
     final String appName = ApplicationProperties.getInstance().getAppName();
 
     // Get OS name for platform-specific configurations
-    final String osName = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT);
+    final String osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 
     // macOS - set app name in menu bar
     if (osName.contains("mac")) {

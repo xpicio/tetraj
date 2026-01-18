@@ -15,6 +15,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferStrategy;
+import java.util.Locale;
 
 /** View for the main menu state. Handles rendering with custom graphics and fonts. */
 public final class MenuView {
@@ -169,8 +170,7 @@ public final class MenuView {
 
     g.setColor(TITLE_TEXT_COLOR);
     g.setFont(titleFont);
-    RenderUtils.drawCenteredString(
-        g, windowWidth, TITLE_Y, appTitle.toUpperCase(java.util.Locale.ROOT));
+    RenderUtils.drawCenteredString(g, windowWidth, TITLE_Y, appTitle.toUpperCase(Locale.ROOT));
   }
 
   /**
