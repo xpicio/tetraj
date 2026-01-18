@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Immutable game session data that is passed between game states. Contains all relevant information
@@ -16,9 +15,9 @@ import java.util.Optional;
 public final class GameSession {
 
   private final PlayerProfile playerProfile;
-  private final Integer score;
-  private final Integer level;
-  private final Integer linesCleared;
+  private final long score;
+  private final int level;
+  private final int linesCleared;
   private final BufferedImage lastFrame;
   private final Instant gameStartTime;
   private final Instant gameEndTime;
@@ -37,20 +36,20 @@ public final class GameSession {
    */
   public GameSession(
       final PlayerProfile playerProfile,
-      final Integer score,
-      final Integer level,
-      final Integer linesCleared,
+      final long score,
+      final int level,
+      final int linesCleared,
       final BufferedImage lastFrame,
       final Instant gameStartTime,
       final Instant gameEndTime) {
     // Validation
-    if (score != null && score < 0) {
+    if (score < 0) {
       throw new IllegalArgumentException("Score cannot be negative");
     }
-    if (level != null && level < 0) {
+    if (level < 0) {
       throw new IllegalArgumentException("Level cannot be negative");
     }
-    if (linesCleared != null && linesCleared < 0) {
+    if (linesCleared < 0) {
       throw new IllegalArgumentException("Lines cleared cannot be negative");
     }
 
@@ -71,7 +70,7 @@ public final class GameSession {
    */
   public static GameSession empty() {
     return new GameSession(
-        PlayerProfileManager.getInstance().getProfile(), null, null, null, null, null, null);
+        PlayerProfileManager.getInstance().getProfile(), 0, 0, 0, null, null, null);
   }
 
   /**
@@ -80,7 +79,7 @@ public final class GameSession {
    * @return true if the session has no game data, false otherwise
    */
   public boolean isEmpty() {
-    return score == null && level == null && linesCleared == null;
+    return score == 0 && level == 0 && linesCleared == 0;
   }
 
   /**
@@ -101,6 +100,7 @@ public final class GameSession {
     if (gameStartTime != null && gameEndTime != null) {
       return Duration.between(gameStartTime, gameEndTime);
     }
+
     return Duration.ZERO;
   }
 
@@ -110,34 +110,34 @@ public final class GameSession {
    *
    * @return The player profile (never null)
    */
-  public PlayerProfile playerProfile() {
+  public PlayerProfile getPlayerProfile() {
     return playerProfile;
   }
 
   /**
    * Gets the score.
    *
-   * @return The score, may be null
+   * @return The score, may be 0
    */
-  public Integer score() {
+  public long getScore() {
     return score;
   }
 
   /**
    * Gets the level.
    *
-   * @return The level, may be null
+   * @return The level, may be 0
    */
-  public Integer level() {
+  public int getLevel() {
     return level;
   }
 
   /**
    * Gets the lines cleared.
    *
-   * @return The lines cleared, may be null
+   * @return The lines cleared, may be 0
    */
-  public Integer linesCleared() {
+  public int getLinesCleared() {
     return linesCleared;
   }
 
@@ -146,7 +146,7 @@ public final class GameSession {
    *
    * @return A copy of the last frame, may be null
    */
-  public BufferedImage lastFrame() {
+  public BufferedImage getLastFrame() {
     return copyImage(lastFrame);
   }
 
@@ -155,7 +155,7 @@ public final class GameSession {
    *
    * @return The start time, may be null
    */
-  public Instant gameStartTime() {
+  public Instant getGameStartTime() {
     return gameStartTime;
   }
 
@@ -164,62 +164,8 @@ public final class GameSession {
    *
    * @return The end time, may be null
    */
-  public Instant gameEndTime() {
+  public Instant getGameEndTime() {
     return gameEndTime;
-  }
-
-  /**
-   * Gets the score as an Optional.
-   *
-   * @return Optional containing the score, or empty if not set
-   */
-  public Optional<Integer> getScore() {
-    return Optional.ofNullable(score);
-  }
-
-  /**
-   * Gets the level as an Optional.
-   *
-   * @return Optional containing the level, or empty if not set
-   */
-  public Optional<Integer> getLevel() {
-    return Optional.ofNullable(level);
-  }
-
-  /**
-   * Gets the lines cleared as an Optional.
-   *
-   * @return Optional containing the lines cleared, or empty if not set
-   */
-  public Optional<Integer> getLinesCleared() {
-    return Optional.ofNullable(linesCleared);
-  }
-
-  /**
-   * Gets the last frame as an Optional. Returns a defensive copy to maintain immutability.
-   *
-   * @return Optional containing a copy of the last frame, or empty if not set
-   */
-  public Optional<BufferedImage> getLastFrame() {
-    return Optional.ofNullable(copyImage(lastFrame));
-  }
-
-  /**
-   * Gets the game start time as an Optional.
-   *
-   * @return Optional containing the start time, or empty if not set
-   */
-  public Optional<Instant> getGameStartTime() {
-    return Optional.ofNullable(gameStartTime);
-  }
-
-  /**
-   * Gets the game end time as an Optional.
-   *
-   * @return Optional containing the end time, or empty if not set
-   */
-  public Optional<Instant> getGameEndTime() {
-    return Optional.ofNullable(gameEndTime);
   }
 
   /** {@inheritDoc} */
@@ -316,9 +262,9 @@ public final class GameSession {
    * setting of fields without requiring all parameters.
    */
   public static final class Builder {
-    private Integer score;
-    private Integer level;
-    private Integer linesCleared;
+    private long score;
+    private int level;
+    private int linesCleared;
     private BufferedImage lastFrame;
     private Instant gameStartTime;
     private Instant gameEndTime;
@@ -334,7 +280,7 @@ public final class GameSession {
      * @param scoreValue The score to set
      * @return This builder for chaining
      */
-    public Builder withScore(final int scoreValue) {
+    public Builder withScore(final long scoreValue) {
       this.score = scoreValue;
       return this;
     }

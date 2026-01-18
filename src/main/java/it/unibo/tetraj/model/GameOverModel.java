@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.Locale;
 
 /** Model for the game over state. Contains final game statistics and background image. */
 public final class GameOverModel {
@@ -22,7 +21,7 @@ public final class GameOverModel {
    */
   public GameOverModel(final GameSession gameSession) {
     this.gameSession = gameSession;
-    lastFrame = this.gameSession.lastFrame();
+    lastFrame = this.gameSession.getLastFrame();
     gameOverStats = GameOverStats.fromSession(this.gameSession);
   }
 
@@ -73,15 +72,14 @@ public final class GameOverModel {
      * @return GameOverStats with extracted values
      */
     public static GameOverStats fromSession(final GameSession gameSession) {
-      final Duration duration =
-          Duration.between(
-              gameSession.getGameStartTime().orElse(Instant.now()),
-              gameSession.getGameEndTime().orElse(Instant.now()));
+      final Instant startTime =
+          gameSession.getGameStartTime() != null ? gameSession.getGameStartTime() : Instant.now();
+      final Instant endTime =
+          gameSession.getGameEndTime() != null ? gameSession.getGameEndTime() : Instant.now();
+      final Duration duration = Duration.between(startTime, endTime);
+
       return new GameOverStats(
-          gameSession.getScore().orElse(0),
-          gameSession.getLevel().orElse(0),
-          gameSession.getLinesCleared().orElse(0),
-          duration);
+          gameSession.getScore(), gameSession.getLevel(), gameSession.getLinesCleared(), duration);
     }
 
     /**
@@ -90,17 +88,13 @@ public final class GameOverModel {
      * @return List of formatted strings describing the game performance
      */
     public List<String> getFormattedLines() {
-      // Format duration (MM:ss)
-      final long minutes = duration.toMinutes();
-      final int seconds = duration.toSecondsPart();
-      final String formattedDuration = String.format(Locale.ROOT, "%02d:%02d", minutes, seconds);
-      // Format score with thousands separator
-      final String formattedScore = String.format(Locale.ROOT, "%,d", score);
-      // Construct the list of lines
+      final String formattedDuration = FormatUtils.formatDuration(duration);
+      final String formattedScore = FormatUtils.formatScore(score);
+
       return List.of(
-          String.format(Locale.ROOT, "You survived for %s,", formattedDuration),
-          String.format(Locale.ROOT, "clearing %d lines to reach level %d", lines, level),
-          String.format(Locale.ROOT, "and earning a total of %s points.", formattedScore));
+          String.format("You survived for %s,", formattedDuration),
+          String.format("clearing %d lines to reach level %d", lines, level),
+          String.format("and earning a total of %s points.", formattedScore));
     }
   }
 }

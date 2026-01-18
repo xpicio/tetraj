@@ -21,19 +21,19 @@ class JsonFileStorageProviderTest {
 
   private static final String LEADERBOARD_ENTRY_P1_ID = "player1";
   private static final String LEADERBOARD_ENTRY_P1_NICKNAME = "Alice";
-  private static final int LEADERBOARD_ENTRY_P1_SCORE = 1000;
+  private static final long LEADERBOARD_ENTRY_P1_SCORE = 1000;
   private static final int LEADERBOARD_ENTRY_P1_LEVEL = 5;
   private static final int LEADERBOARD_ENTRY_P1_LINES = 20;
   private static final int LEADERBOARD_ENTRY_P1_DURATION = 10;
   private static final String LEADERBOARD_ENTRY_P2_ID = "player2";
   private static final String LEADERBOARD_ENTRY_P2_NICKNAME = "Bob";
-  private static final int LEADERBOARD_ENTRY_P2_SCORE = 2000;
+  private static final long LEADERBOARD_ENTRY_P2_SCORE = 2000;
   private static final int LEADERBOARD_ENTRY_P2_LEVEL = 8;
   private static final int LEADERBOARD_ENTRY_P2_LINES = 40;
   private static final int LEADERBOARD_ENTRY_P2_DURATION = 15;
   private static final String LEADERBOARD_ENTRY_P3_ID = "player3";
   private static final String LEADERBOARD_ENTRY_P3_NICKNAME = "Charlie";
-  private static final int LEADERBOARD_ENTRY_P3_SCORE = 1500;
+  private static final long LEADERBOARD_ENTRY_P3_SCORE = 1500;
   private static final int LEADERBOARD_ENTRY_P3_LEVEL = 6;
   private static final int LEADERBOARD_ENTRY_P3_LINES = 30;
   private static final int LEADERBOARD_ENTRY_P3_DURATION = 12;
@@ -171,7 +171,13 @@ class JsonFileStorageProviderTest {
     for (int i = 0; i < StorageProvider.MAX_ENTRIES + ADDITIONAL_ENTRIES; i++) {
       final LeaderboardEntry entry =
           new LeaderboardEntry(
-              "player" + i, "Player" + i, i * 100, Instant.now(), i, i * 2, Duration.ofMinutes(i));
+              "player" + i,
+              "Player" + i,
+              (long) i * 100,
+              Instant.now(),
+              i,
+              i * 2,
+              Duration.ofMinutes(i));
       provider.save(entry);
     }
 

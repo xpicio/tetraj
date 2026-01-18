@@ -17,7 +17,6 @@ public final class Leaderboard {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Leaderboard.class);
   private static final int REDIS_DEFAULT_PORT = 6379;
-
   private final List<StorageProvider> providers;
   private StorageProvider activeProvider;
 
@@ -27,7 +26,7 @@ public final class Leaderboard {
    * @param providers The list of storage providers to use
    */
   public Leaderboard(final List<StorageProvider> providers) {
-    this.providers = providers;
+    this.providers = List.copyOf(providers);
     selectActiveProvider();
   }
 
@@ -43,7 +42,7 @@ public final class Leaderboard {
    * @param score The score to check
    * @return true if the score would enter the leaderboard
    */
-  public boolean isQualifyingScore(final int score) {
+  public boolean isQualifyingScore(final long score) {
     if (activeProvider == null) {
       return false;
     }
@@ -69,7 +68,7 @@ public final class Leaderboard {
   public boolean save(
       final String playerId,
       final String playerNickname,
-      final int score,
+      final long score,
       final int level,
       final int lines,
       final Duration duration) {

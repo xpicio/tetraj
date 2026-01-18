@@ -17,7 +17,7 @@ import java.time.Instant;
 public record LeaderboardEntry(
     String id,
     String nickname,
-    int score,
+    long score,
     Instant timestamp,
     int level,
     int lines,
@@ -34,7 +34,7 @@ public record LeaderboardEntry(
   @Override
   public int compareTo(final LeaderboardEntry other) {
     // First compare by score (descending, higher is better)
-    final int scoreCompare = Integer.compare(other.score, this.score);
+    final int scoreCompare = Long.compare(other.score, this.score);
 
     if (scoreCompare != 0) {
       return scoreCompare;

@@ -302,7 +302,7 @@ class LeaderboardTest {
     final Leaderboard leaderboard = new Leaderboard(List.of(jsonProvider));
     final String playerId = "very-high-player";
     final String nickname = "VeryHighScore";
-    final int score = Integer.MAX_VALUE - 1;
+    final long score = Long.MAX_VALUE - 1;
     final int level = 100;
     final int lines = 1000;
     final int duration = 66;

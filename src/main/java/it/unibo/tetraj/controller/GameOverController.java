@@ -105,28 +105,28 @@ public class GameOverController implements Controller {
    */
   private void saveScoreIfQualifying(final GameSession gameSession) {
     final Leaderboard leaderboard = applicationContext.getLeaderboard();
-    final PlayerProfile playerProfile = gameSession.playerProfile();
+    final PlayerProfile playerProfile = gameSession.getPlayerProfile();
 
-    if (leaderboard.isQualifyingScore(gameSession.score())) {
+    if (leaderboard.isQualifyingScore(gameSession.getScore())) {
       final boolean saved =
           leaderboard.save(
               playerProfile.id(),
               playerProfile.nickname(),
-              gameSession.score(),
-              gameSession.level(),
-              gameSession.linesCleared(),
+              gameSession.getScore(),
+              gameSession.getLevel(),
+              gameSession.getLinesCleared(),
               gameSession.getDuration());
 
       if (saved) {
         LOGGER.info(
             "Score {} for player {} saved to leaderboard",
-            gameSession.score(),
+            gameSession.getScore(),
             playerProfile.nickname());
       } else {
         LOGGER.error("Failed to save qualifying score to leaderboard");
       }
     } else {
-      LOGGER.info("Score {} does not qualify for leaderboard", gameSession.score());
+      LOGGER.info("Score {} does not qualify for leaderboard", gameSession.getScore());
     }
   }
 }
