@@ -251,10 +251,10 @@ class LeaderboardTest {
         Duration.ofMinutes(LEADERBOARD_ENTRY_P1_DURATION));
 
     // Act
-    final boolean qualifies = leaderboard.qualifies(LEADERBOARD_ENTRY_P2_SCORE);
+    final boolean isQualifyingScore = leaderboard.isQualifyingScore(LEADERBOARD_ENTRY_P2_SCORE);
 
     // Assert
-    assertTrue(qualifies, "Higher score should qualify");
+    assertTrue(isQualifyingScore, "Higher score should qualify");
   }
 
   @Test
@@ -265,10 +265,10 @@ class LeaderboardTest {
     final Leaderboard leaderboard = new Leaderboard(List.of(jsonProvider));
 
     // Act
-    final boolean qualifies = leaderboard.qualifies(SCORE_THRESHOLD);
+    final boolean isQualifyingScore = leaderboard.isQualifyingScore(SCORE_THRESHOLD);
 
     // Assert
-    assertTrue(qualifies, "Any score qualifies for empty leaderboard");
+    assertTrue(isQualifyingScore, "Any score qualifies for empty leaderboard");
   }
 
   @Test
@@ -335,15 +335,15 @@ class LeaderboardTest {
   }
 
   @Test
-  @DisplayName("should return false when qualifies with no provider")
+  @DisplayName("should return false when checking if score qualifies with no provider")
   void shouldReturnFalseWhenQualifiesWithNoProvider() {
     // Arrange - no providers
     final Leaderboard leaderboard = new Leaderboard(List.of());
 
     // Act
-    final boolean qualifies = leaderboard.qualifies(SCORE_THRESHOLD);
+    final boolean isQualifyingScore = leaderboard.isQualifyingScore(SCORE_THRESHOLD);
 
     // Assert
-    assertFalse(qualifies, "Should return false when no provider available");
+    assertFalse(isQualifyingScore, "Should return false when no provider available");
   }
 }

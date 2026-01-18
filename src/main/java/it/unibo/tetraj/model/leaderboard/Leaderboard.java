@@ -47,7 +47,7 @@ public final class Leaderboard {
    * @param score The score to check
    * @return true if the score would enter the leaderboard
    */
-  public boolean qualifies(final int score) {
+  public boolean isQualifyingScore(final int score) {
     if (activeProvider == null) {
       return false;
     }
