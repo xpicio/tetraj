@@ -8,8 +8,10 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.stream.Stream;
 
 /** View for the game over state. Simple implementation showing "GAME OVER" and game statistics. */
@@ -19,8 +21,11 @@ public class GameOverView {
   private static final float BACKGROUND_OVERLAY_ALPHA = 0.80f;
   private static final Color TITLE_TEXT_COLOR = new Color(220, 40, 40);
   private static final Color DEFAULT_TEXT_COLOR = Color.WHITE;
+  private static final Color FOOTER_TEXT_COLOR = Color.WHITE;
   private static final float TITLE_FONT_SIZE = 48f;
   private static final float DEFAULT_FONT_SIZE = 18f;
+  private static final float FOOTER_FONT_SIZE = 18f;
+  private static final int FOOTER_BOTTOM_OFFSET = 40;
   private final ApplicationProperties applicationProperties;
   private final Canvas canvas;
   private final int windowWidth;
@@ -28,6 +33,7 @@ public class GameOverView {
   private BufferStrategy bufferStrategy;
   private Font titleFont;
   private Font defaulFont;
+  private Font footerFont;
 
   /** Creates a new game over view. */
   public GameOverView() {
@@ -85,6 +91,8 @@ public class GameOverView {
               TITLE_TEXT_COLOR,
               windowWidth,
               windowHeight);
+          // Draw footer
+          drawFooter(g);
         });
   }
 
@@ -106,5 +114,22 @@ public class GameOverView {
     // Load fonts
     titleFont = resources.getPressStart2PFont(TITLE_FONT_SIZE);
     defaulFont = resources.getPressStart2PFont(DEFAULT_FONT_SIZE);
+    footerFont = resources.getPressStart2PFont(FOOTER_FONT_SIZE);
+  }
+
+  /**
+   * Draws the footer with instructions.
+   *
+   * @param g The graphics context
+   */
+  private void drawFooter(final Graphics2D g) {
+    RenderUtils.drawCenteredTextBlockFromBottom(
+        g,
+        List.of("Press L to view Legends", "Press ESC to return to menu"),
+        footerFont,
+        FOOTER_TEXT_COLOR,
+        windowWidth,
+        windowHeight,
+        FOOTER_BOTTOM_OFFSET);
   }
 }

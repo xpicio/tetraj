@@ -216,6 +216,47 @@ public final class RenderUtils {
   }
 
   /**
+   * Draws centered text block positioned from the bottom of the canvas. Useful for footers and
+   * bottom-aligned content. The last line's baseline will be positioned at exactly canvasHeight -
+   * bottomOffset.
+   *
+   * @param g The graphics context
+   * @param lines The lines of text to draw
+   * @param font The font to use for all lines
+   * @param color The text color
+   * @param canvasWidth The width of the canvas
+   * @param canvasHeight The height of the canvas
+   * @param bottomOffset The offset in pixels from the bottom of the canvas to the last line's
+   *     baseline
+   */
+  public static void drawCenteredTextBlockFromBottom(
+      final Graphics2D g,
+      final List<String> lines,
+      final Font font,
+      final Color color,
+      final int canvasWidth,
+      final int canvasHeight,
+      final int bottomOffset) {
+    if (lines.isEmpty()) {
+      return;
+    }
+
+    // Calculate positioning: last line's baseline should be at canvasHeight - bottomOffset
+    final Font originalFont = g.getFont();
+    final FontMetrics metrics = g.getFontMetrics();
+    final int lineHeight = metrics.getHeight();
+    // Start position for first line's baseline, working backwards from where last line should be
+    final int startY =
+        canvasHeight - bottomOffset - ((lines.size() - 1) * (lineHeight + DEFAULT_ROW_SPACING));
+
+    g.setColor(color);
+    // Draw each line
+    drawLines(g, null, null, font, false, startY, DEFAULT_ROW_SPACING, canvasWidth, lines);
+    // Restore original font
+    g.setFont(originalFont);
+  }
+
+  /**
    * Calculates the total height needed for a text block. Takes into account different font sizes
    * for title and text lines, as well as spacing between lines.
    *
@@ -285,6 +326,7 @@ public final class RenderUtils {
 
     for (int i = 0; i < lines.size(); i++) {
       final boolean isTitle = hasTitle && i == 0;
+
       // Set appropriate font
       if (isTitle) {
         g.setColor(titleFontColor);
@@ -293,8 +335,10 @@ public final class RenderUtils {
         g.setColor(originalFontColor);
         g.setFont(textFont);
       }
+
       // Get metrics for current font
       final FontMetrics metrics = g.getFontMetrics();
+
       // Position and draw the line
       currentY += metrics.getAscent();
       drawCenteredString(g, canvasWidth, currentY, lines.get(i));

@@ -257,6 +257,7 @@ class GameStateManagerTest {
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.MENU));
     assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.PLAYING));
+    assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.LEADERBOARD));
   }
 
   @Test
@@ -338,5 +339,24 @@ class GameStateManagerTest {
     assertEquals(GameState.LEADERBOARD, stateManager.getCurrentState());
     verify(leaderboardController, never()).exit();
     verifyNoInteractions(playController);
+  }
+
+  @Test
+  @DisplayName("should allow valid transition from GAME_OVER to LEADERBOARD")
+  void shouldAllowValidTransitionFromGameOverToLeaderboard() {
+    // Arrange
+    stateManager.switchTo(GameState.MENU);
+    stateManager.switchTo(GameState.PLAYING);
+    stateManager.switchTo(GameState.GAME_OVER);
+    reset(gameOverController, leaderboardController);
+
+    // Act
+    final boolean result = stateManager.switchTo(GameState.LEADERBOARD);
+
+    // Assert
+    assertTrue(result, "Should allow transition from GAME_OVER to LEADERBOARD");
+    assertEquals(GameState.LEADERBOARD, stateManager.getCurrentState());
+    verify(gameOverController, times(1)).exit();
+    verify(leaderboardController, times(1)).enter(null);
   }
 }

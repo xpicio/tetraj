@@ -96,6 +96,10 @@ public class GameOverController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_ESCAPE,
         new StateTransitionCommand(applicationContext.getStateManager(), GameState.MENU));
+    // L to view leaderboard
+    inputHandler.bindKey(
+        KeyEvent.VK_L,
+        new StateTransitionCommand(applicationContext.getStateManager(), GameState.LEADERBOARD));
   }
 
   /**
