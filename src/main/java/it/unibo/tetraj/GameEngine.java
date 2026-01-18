@@ -47,8 +47,8 @@ public final class GameEngine implements Runnable {
    * @param stateManager The configured state manager
    */
   public GameEngine(final GameStateManager stateManager) {
-    applicationProperties = ApplicationProperties.getInstance();
     this.stateManager = stateManager;
+    applicationProperties = ApplicationProperties.getInstance();
     window = createWindow();
   }
 

@@ -45,10 +45,10 @@ public class GameOverController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter(final GameSession gameSession) {
+    final boolean isScoreSaved = saveScoreIfQualifying(gameSession);
     resources.playSound("gameOver.wav");
-    model = Optional.of(new GameOverModel(gameSession));
+    model = Optional.of(new GameOverModel(gameSession, isScoreSaved));
     setupKeyBindings();
-    saveScoreIfQualifying(gameSession);
     LOGGER.info("Entering game over state");
   }
 
@@ -102,13 +102,15 @@ public class GameOverController implements Controller {
    * Saves the score to the leaderboard if it qualifies.
    *
    * @param gameSession The game session containing the score
+   * @return true if the score was successfully saved to the leaderboard, false otherwise
    */
-  private void saveScoreIfQualifying(final GameSession gameSession) {
+  private boolean saveScoreIfQualifying(final GameSession gameSession) {
     final Leaderboard leaderboard = applicationContext.getLeaderboard();
     final PlayerProfile playerProfile = gameSession.getPlayerProfile();
+    boolean isSaved = false;
 
     if (leaderboard.isQualifyingScore(gameSession.getScore())) {
-      final boolean saved =
+      isSaved =
           leaderboard.save(
               playerProfile.id(),
               playerProfile.nickname(),
@@ -117,7 +119,7 @@ public class GameOverController implements Controller {
               gameSession.getLinesCleared(),
               gameSession.getDuration());
 
-      if (saved) {
+      if (isSaved) {
         LOGGER.info(
             "Score {} for player {} saved to leaderboard",
             gameSession.getScore(),
@@ -128,5 +130,6 @@ public class GameOverController implements Controller {
     } else {
       LOGGER.info("Score {} does not qualify for leaderboard", gameSession.getScore());
     }
+    return isSaved;
   }
 }
