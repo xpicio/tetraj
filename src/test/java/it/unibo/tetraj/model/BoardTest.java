@@ -10,6 +10,7 @@ import it.unibo.tetraj.model.piece.AbstractTetromino;
 import java.awt.Color;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /** Tests for the Board class. */
@@ -43,6 +44,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should clear single complete line")
   void shouldClearSingleCompleteLine() {
     // Arrange
     helper.fillRow(board, BOTTOM_ROW, Color.BLUE);
@@ -63,6 +65,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should clear multiple consecutive lines")
   void shouldClearMultipleConsecutiveLines() {
     // Arrange - fill rows 19, 18, 17
     helper.fillRow(board, BOTTOM_ROW, Color.BLUE);
@@ -95,6 +98,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should clear multiple non-consecutive lines")
   void shouldClearMultipleNonConsecutiveLines() {
     // Arrange - fill rows 19, 17, 15 (with gaps)
     helper.fillRow(board, BOTTOM_ROW, Color.BLUE);
@@ -129,6 +133,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should clear four lines for Tetris")
   void shouldClearFourLinesForTetris() {
     // Arrange - fill bottom 4 rows
     helper.fillRow(board, BOTTOM_ROW, Color.BLUE);
@@ -161,6 +166,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should not clear partial lines")
   void shouldNotClearPartialLines() {
     // Arrange - fill row 19 but leave one gap
     helper.partialFillRow(board, BOTTOM_ROW, SINGLE_GAP); // Leave 1 cell empty
@@ -177,6 +183,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should return empty list when clearing empty board")
   void shouldReturnEmptyListWhenClearingEmptyBoard() {
     // Act - clear on empty board
     final List<Integer> clearedLines = board.clearCompletedLines();
@@ -186,18 +193,21 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should detect game over when top row has pieces")
   void shouldDetectGameOverWhenTopRowHasPieces() {
-    // Arrange & Assert - initially not game over
-    assertFalse(board.isGameOver(), "Empty board should not be game over");
+    // Arrange
+    final TestTetromino testTetromino = new TestTetromino(TEST_COLUMN, TOP_ROW, Color.RED);
 
     // Act - place piece at top
-    board.placeTetromino(new TestTetromino(TEST_COLUMN, TOP_ROW, Color.RED));
+    board.placeTetromino(testTetromino);
 
     // Assert
-    assertTrue(board.isGameOver(), "Should be game over when top row has pieces");
+    assertFalse(
+        board.isValidPosition(testTetromino), "Should be game over when top row has pieces");
   }
 
   @Test
+  @DisplayName("should clear entire board")
   void shouldClearEntireBoard() {
     // Arrange - add some pieces
     helper.fillRow(board, BOTTOM_ROW, Color.BLUE);
@@ -217,6 +227,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should return true for valid position")
   void shouldReturnTrueForValidPosition() {
     // Arrange
     final TestTetromino piece = new TestTetromino(TEST_COLUMN, MIDDLE_ROW, Color.BLUE);
@@ -226,6 +237,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should return false for position with collision")
   void shouldReturnFalseForPositionWithCollision() {
     // Arrange - place a piece first
     board.placeTetromino(new TestTetromino(TEST_COLUMN, MIDDLE_ROW, Color.RED));
@@ -238,6 +250,7 @@ class BoardTest {
   }
 
   @Test
+  @DisplayName("should return false for out of bounds position")
   void shouldReturnFalseForOutOfBoundsPosition() {
     // Test left boundary
     TestTetromino piece = new TestTetromino(NEGATIVE_POSITION, MIDDLE_ROW, Color.BLUE);

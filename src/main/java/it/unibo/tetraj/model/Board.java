@@ -116,21 +116,6 @@ public final class Board {
     return clearedLines;
   }
 
-  /**
-   * Checks if the game is over (pieces at the top).
-   *
-   * @return true if game is over
-   */
-  public boolean isGameOver() {
-    // Check if any cell in the top row is occupied
-    for (int col = 0; col < width; col++) {
-      if (cells[0][col] != null) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   /** Clears the entire board. */
   public void clear() {
     for (int row = 0; row < height; row++) {

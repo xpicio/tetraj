@@ -194,8 +194,10 @@ public final class PlayView {
      */
     void render(final Graphics2D g, final PlayModel model) {
       drawBoard(g);
-      drawGhostPiece(g, model.getGhostPiece());
-      drawCurrentPiece(g, model.getCurrentPiece());
+      if (!model.isGameOver()) {
+        drawGhostPiece(g, model.getGhostPiece());
+        drawCurrentPiece(g, model.getCurrentPiece());
+      }
       drawNextPiece(g, model.getNextPiece());
       drawHeldPiece(g, model.getHeldPiece());
       drawGameInfo(g, model);
