@@ -31,14 +31,7 @@ public final class ResourceManager {
   // Default font name for fallback
   private static final String DEFAULT_FONT = "Arial";
   // Font files with subfolder paths
-  private static final String RUBIK_FONT_FILE = "Rubik_Mono_One/RubikMonoOne-Regular.ttf";
   private static final String PIXEL_FONT_FILE = "Press_Start_2P/PressStart2P-Regular.ttf";
-  // Font size
-  private static final float FONT_SIZE_TITLE = 48f;
-  private static final float FONT_SIZE_LARGE = 36f;
-  private static final float FONT_SIZE_NORMAL = 24f;
-  private static final float FONT_SIZE_MEDIUM = 20f;
-  private static final float FONT_SIZE_SMALL = 16f;
   // Resources cache
   private static final Map<FontKey, Font> FONT_CACHE = new HashMap<>();
   private static final Map<String, Image> IMAGE_CACHE = new HashMap<>();
@@ -67,15 +60,45 @@ public final class ResourceManager {
     return INSTANCE;
   }
 
+  /** Predefined font sizes for consistent typography across the application. */
+  public enum FontSize {
+    /** Display size (72pt) for large titles. */
+    DISPLAY(72),
+    /** H1 size (48pt) for main headings. */
+    H1(48),
+    /** H2 size (24pt) for subheadings. */
+    H2(24),
+    /** Body size (18pt) for regular text. */
+    BODY(18),
+    /** Caption size (12pt) for small text. */
+    CAPTION(12);
+
+    /** The font size in points. */
+    private final int size;
+
+    FontSize(final int size) {
+      this.size = size;
+    }
+
+    /**
+     * Gets the font size in points.
+     *
+     * @return The font size
+     */
+    public int getSize() {
+      return size;
+    }
+  }
+
   /**
    * Loads a font from resources.
    *
    * @param fontName The font file name (e.g., "RubikMonoOne.ttf")
-   * @param size The desired font size
+   * @param fontSize The desired font size
    * @return The loaded font, or default font if loading fails
    */
-  public Font loadFont(final String fontName, final float size) {
-    final FontKey key = new FontKey(fontName, size);
+  public Font loadFont(final String fontName, final FontSize fontSize) {
+    final FontKey key = new FontKey(fontName, fontSize.getSize());
 
     return FONT_CACHE.computeIfAbsent(key, k -> loadFontInternal(k.name(), k.size()));
   }
@@ -101,23 +124,13 @@ public final class ResourceManager {
   }
 
   /**
-   * Gets the Rubik Mono One font in specified size.
-   *
-   * @param size The desired font size
-   * @return The Rubik Mono One font
-   */
-  public Font getRubikMonoOneFont(final float size) {
-    return loadFont(RUBIK_FONT_FILE, size);
-  }
-
-  /**
    * Gets the Press Start 2P pixel font in specified size.
    *
-   * @param size The desired font size
+   * @param fontSize The desired font size
    * @return The Press Start 2P font
    */
-  public Font getPressStart2PFont(final float size) {
-    return loadFont(PIXEL_FONT_FILE, size);
+  public Font getPressStart2PFont(final FontSize fontSize) {
+    return loadFont(PIXEL_FONT_FILE, fontSize);
   }
 
   /**
@@ -255,16 +268,12 @@ public final class ResourceManager {
 
   /** Preloads common fonts. */
   private void preloadFonts() {
-    // Modern font for UI - Rubik Mono One
-    loadFont(RUBIK_FONT_FILE, FONT_SIZE_TITLE);
-    loadFont(RUBIK_FONT_FILE, FONT_SIZE_LARGE);
-    loadFont(RUBIK_FONT_FILE, FONT_SIZE_NORMAL);
-    loadFont(RUBIK_FONT_FILE, FONT_SIZE_MEDIUM);
-    loadFont(RUBIK_FONT_FILE, FONT_SIZE_SMALL);
-
     // Pixel font for retro feel - Press Start 2P
-    loadFont(PIXEL_FONT_FILE, FONT_SIZE_NORMAL);
-    loadFont(PIXEL_FONT_FILE, FONT_SIZE_SMALL);
+    loadFont(PIXEL_FONT_FILE, FontSize.DISPLAY);
+    loadFont(PIXEL_FONT_FILE, FontSize.H1);
+    loadFont(PIXEL_FONT_FILE, FontSize.H2);
+    loadFont(PIXEL_FONT_FILE, FontSize.BODY);
+    loadFont(PIXEL_FONT_FILE, FontSize.CAPTION);
   }
 
   /** Preloads sound effects. */
@@ -299,28 +308,26 @@ public final class ResourceManager {
    * @param size The desired size
    * @return The loaded font or a default fallback
    */
-  private Font loadFontInternal(final String fontName, final float size) {
+  private Font loadFontInternal(final String fontName, final int size) {
     try (InputStream inputStream = getClass().getResourceAsStream(FONTS_PATH + fontName)) {
       if (inputStream == null) {
         LOGGER.warn("Font not found: {}", fontName);
-        return new Font(DEFAULT_FONT, Font.PLAIN, (int) size);
+        return new Font(DEFAULT_FONT, Font.PLAIN, size);
       }
 
       final Font baseFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-
       // Register font with system for better rendering
       final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      ge.registerFont(baseFont);
-
       // Derive font with desired size
-      final Font sizedFont = baseFont.deriveFont(size);
+      final Font sizedFont = baseFont.deriveFont((float) size);
 
+      ge.registerFont(baseFont);
       LOGGER.info("Font loaded: {} size {}", fontName, size);
       return sizedFont;
 
     } catch (final FontFormatException | IOException e) {
       LOGGER.error("Failed to load font: {}", fontName, e);
-      return new Font(DEFAULT_FONT, Font.PLAIN, (int) size);
+      return new Font(DEFAULT_FONT, Font.PLAIN, size);
     }
   }
 
@@ -388,7 +395,7 @@ public final class ResourceManager {
    * @param name The font file name
    * @param size The font size
    */
-  private record FontKey(String name, float size) {
-    // empty
+  private record FontKey(String name, int size) {
+    // Empty body with comment to avoid Spotless/Checkstyle conflict
   }
 }
