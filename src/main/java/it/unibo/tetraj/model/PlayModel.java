@@ -136,14 +136,14 @@ public final class PlayModel {
 
   /** Rotates the current piece clockwise. */
   public void rotateClockwise() {
-    if (tryRotate(AbstractTetromino::rotateClockwise, AbstractTetromino::rotatecounterClockwise)) {
+    if (tryRotate(AbstractTetromino::rotateClockwise, AbstractTetromino::rotateCounterClockwise)) {
       resources.playSound("rotate.wav");
     }
   }
 
   /** Rotates the current piece counterclockwise. */
-  public void rotatecounterClockwise() {
-    if (tryRotate(AbstractTetromino::rotatecounterClockwise, AbstractTetromino::rotateClockwise)) {
+  public void rotateCounterClockwise() {
+    if (tryRotate(AbstractTetromino::rotateCounterClockwise, AbstractTetromino::rotateClockwise)) {
       resources.playSound("rotate.wav");
     }
   }

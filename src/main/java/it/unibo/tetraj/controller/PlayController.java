@@ -153,10 +153,10 @@ public final class PlayController implements Controller {
     // CONTROL or Z to rotate counterclockwise
     inputHandler.bindKey(
         KeyEvent.VK_CONTROL,
-        new PlayCommand(model, PlayModel::rotatecounterClockwise, "rotatecounterClockwise"));
+        new PlayCommand(model, PlayModel::rotateCounterClockwise, "rotateCounterClockwise"));
     inputHandler.bindKey(
         KeyEvent.VK_Z,
-        new PlayCommand(model, PlayModel::rotatecounterClockwise, "rotatecounterClockwise"));
+        new PlayCommand(model, PlayModel::rotateCounterClockwise, "rotateCounterClockwise"));
     // SHIFT or C to hold piece
     inputHandler.bindKey(
         KeyEvent.VK_SHIFT, new PlayCommand(model, PlayModel::holdPiece, "holdPiece"));

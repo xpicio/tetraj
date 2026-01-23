@@ -53,7 +53,7 @@ public abstract class AbstractTetromino<T extends AbstractTetromino<T>> implemen
 
   /** {@inheritDoc} */
   @Override
-  public void rotatecounterClockwise() {
+  public void rotateCounterClockwise() {
     rotation = (rotation + 3) % 4;
   }
 

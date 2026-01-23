@@ -22,7 +22,7 @@ public class LeaderboardView extends AbstractView<LeaderboardModel> {
   private static final int ENTRY_START_Y = 240;
   private static final int ENTRY_LINE_HEIGHT = 30;
   private static final int FOOTER_BOTTOM_OFFSET = 40;
-  private static final int NICKNAME_MAX_LENGHT = 16;
+  private static final int NICKNAME_MAX_LENGTH = 16;
   private static final float TABLE_WIDTH_PERCENT = 0.80f;
   private static final float[] COLUMN_WIDTHS = {0.08f, 0.30f, 0.22f, 0.12f, 0.12f, 0.16f};
   private Image backgroundImage;
@@ -108,7 +108,7 @@ public class LeaderboardView extends AbstractView<LeaderboardModel> {
     for (final LeaderboardDisplayEntry entry : entries) {
       final String[] row = {
         String.valueOf(entry.rank()),
-        truncate(entry.nickname(), NICKNAME_MAX_LENGHT),
+        truncate(entry.nickname(), NICKNAME_MAX_LENGTH),
         String.valueOf(entry.score()),
         String.valueOf(entry.level()),
         String.valueOf(entry.lines()),

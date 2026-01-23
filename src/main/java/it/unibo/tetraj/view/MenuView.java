@@ -4,9 +4,7 @@ import it.unibo.tetraj.model.MenuModel;
 import it.unibo.tetraj.model.MenuModel.Controls;
 import it.unibo.tetraj.model.MenuModel.Credits;
 import it.unibo.tetraj.util.ResourceManager;
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.Locale;
@@ -42,30 +40,9 @@ public final class MenuView extends AbstractView<MenuModel> {
         getWindowWidth(),
         getWindowHeight(),
         g -> {
-          // Draw background image if loaded
-          if (backgroundImage != null) {
-            // Calculate scale factor to cover the entire screen (like CSS: background-size: cover)
-            // Use Math.max to ensure the image fills the largest dimension
-            final int imgWidth = backgroundImage.getWidth(null);
-            final int imgHeight = backgroundImage.getHeight(null);
-            final double scale =
-                Math.max(
-                    (double) getWindowWidth() / imgWidth, (double) getWindowHeight() / imgHeight);
-            // Calculate new dimensions keeping aspect ratio
-            final int newWidth = (int) (imgWidth * scale);
-            final int newHeight = (int) (imgHeight * scale);
-            final int x = (getWindowWidth() - newWidth) / 2;
-            final int y = getWindowHeight() - newHeight;
-            final Composite originalComposite = g.getComposite();
-
-            g.drawImage(backgroundImage, x, y, newWidth, newHeight, null);
-            // Add semi-transparent overlay for text readability
-            g.setComposite(
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, BACKGROUND_OVERLAY_ALPHA));
-            g.setColor(new Color(0, 0, 0));
-            g.fillRect(0, 0, getWindowWidth(), getWindowHeight());
-            g.setComposite(originalComposite);
-          }
+          // Draw background image with overlay
+          RenderUtils.drawBackgroundWithOverlay(
+              g, backgroundImage, getWindowWidth(), getWindowHeight(), BACKGROUND_OVERLAY_ALPHA);
           // Draw menu content
           drawTitle(g, model);
           drawControls(g, model);

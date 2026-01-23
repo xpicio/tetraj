@@ -26,7 +26,7 @@ public class StateTransitionCommand implements Command {
   /** {@inheritDoc} */
   @Override
   public void execute() {
-    LOGGER.info("Attempting transition to: " + targetState);
+    LOGGER.info("Attempting transition to: {}", targetState);
     if (!stateManager.switchTo(targetState)) {
       LOGGER.warn("Transition failed, invalid from current state");
     }

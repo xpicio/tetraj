@@ -20,7 +20,7 @@ public interface Tetromino {
   void rotateClockwise();
 
   /** Rotates the tetromino 90 degrees counterclockwise. */
-  void rotatecounterClockwise();
+  void rotateCounterClockwise();
 
   /**
    * Returns the 2D matrix representing the tetromino's shape in its current rotation state.
