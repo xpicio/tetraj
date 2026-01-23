@@ -167,4 +167,27 @@ class BagRandomizerStrategyTest {
           availableTypes.contains(result), "Result should be a valid type at iteration " + i);
     }
   }
+
+  @Test
+  @DisplayName("should clear bag and start fresh cycle after reset")
+  void shouldClearBagAfterReset() {
+    // Arrange - partially consume the bag
+    final int piecesToConsume = 3;
+    for (int i = 0; i < piecesToConsume; i++) {
+      strategy.next();
+    }
+
+    // Act
+    strategy.reset();
+    final Set<Class<? extends AbstractTetromino<?>>> afterReset = new HashSet<>();
+    for (int i = 0; i < bagSize; i++) {
+      afterReset.add(strategy.next());
+    }
+
+    // Assert
+    assertEquals(bagSize, afterReset.size(), "After reset, should get all types in one cycle");
+    assertTrue(
+        afterReset.containsAll(availableTypes),
+        "After reset, should receive all available tetromino types");
+  }
 }
