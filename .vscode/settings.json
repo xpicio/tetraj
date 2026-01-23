@@ -1,4 +1,10 @@
 {
+  // Coverage Gutters - JaCoCo
+  "coverage-gutters.coverageFileNames": [
+    "build/reports/jacoco/test/jacocoTestReport.xml"
+  ],
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.runtimes": [
     {
@@ -8,14 +14,14 @@
     }
   ],
   "java.configuration.updateBuildConfiguration": "automatic",
-    // DISABILITA formattazione automatica NATIVA per Java!
-    // Useremo Google Java Format con shortcut manuale
-    "[java]": {
-        "editor.formatOnSave": false,
-        "editor.formatOnPaste": false,
-        "editor.formatOnType": false,
-        "editor.defaultFormatter": null
-    },
+  // DISABILITA formattazione automatica NATIVA per Java!
+  // Useremo Google Java Format con shortcut manuale
+  "[java]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+    "editor.defaultFormatter": null
+  },
   // Disabilita anche gli organizer di import automatici
   "java.saveActions.organizeImports": false
 }
