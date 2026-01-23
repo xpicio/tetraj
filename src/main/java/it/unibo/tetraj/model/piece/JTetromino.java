@@ -13,7 +13,6 @@ public final class JTetromino extends AbstractTetromino<JTetromino> {
     {{0, 1, 0}, {0, 1, 0}, {1, 1, 0}},
   };
 
-  /** The standard color for J piece. */
   private static final Color COLOR = Color.BLUE;
 
   /**

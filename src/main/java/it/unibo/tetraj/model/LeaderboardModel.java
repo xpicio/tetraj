@@ -1,7 +1,7 @@
 package it.unibo.tetraj.model;
 
-import it.unibo.tetraj.GameSession;
 import it.unibo.tetraj.model.leaderboard.LeaderboardEntry;
+import it.unibo.tetraj.model.leaderboard.PlayerProfileManager;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -11,18 +11,14 @@ import java.util.stream.IntStream;
  */
 public final class LeaderboardModel {
 
-  private final GameSession gameSession;
   private final List<LeaderboardEntry> leaderboardEntries;
 
   /**
    * Creates a new leaderboard model.
    *
-   * @param gameSession The game session containing player profile
    * @param leaderboardEntries The list of leaderboard entries from storage
    */
-  public LeaderboardModel(
-      final GameSession gameSession, final List<LeaderboardEntry> leaderboardEntries) {
-    this.gameSession = gameSession;
+  public LeaderboardModel(final List<LeaderboardEntry> leaderboardEntries) {
     this.leaderboardEntries = List.copyOf(leaderboardEntries);
   }
 
@@ -32,7 +28,7 @@ public final class LeaderboardModel {
    * @return The current player's ID
    */
   public String getCurrentPlayerProfileId() {
-    return gameSession.getPlayerProfile().id();
+    return PlayerProfileManager.getInstance().getProfile().id();
   }
 
   /**

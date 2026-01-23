@@ -10,15 +10,10 @@ import java.util.function.BiFunction;
  */
 public final class TetrominoRegistry {
 
-  /** The singleton instance. */
   private static final TetrominoRegistry INSTANCE = new TetrominoRegistry();
-
-  /** Map of tetromino types to their factory functions. */
   private final Map<
           Class<? extends AbstractTetromino<?>>, BiFunction<Integer, Integer, AbstractTetromino<?>>>
       factories;
-
-  /** List of all available tetromino types. */
   private final List<Class<? extends AbstractTetromino<?>>> availableTypes;
 
   /** Private constructor for singleton pattern. */

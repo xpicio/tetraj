@@ -13,7 +13,6 @@ public final class ZTetromino extends AbstractTetromino<ZTetromino> {
     {{0, 1, 0}, {1, 1, 0}, {1, 0, 0}},
   };
 
-  /** The standard color for Z piece. */
   private static final Color COLOR = Color.RED;
 
   /**

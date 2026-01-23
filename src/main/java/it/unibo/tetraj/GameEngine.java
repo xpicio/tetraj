@@ -110,7 +110,7 @@ public final class GameEngine implements Runnable {
       final GameState currentState = stateManager.getCurrentState();
 
       if (currentState != lastState) {
-        LOGGER.info("State changed from " + lastState + " to " + currentState);
+        LOGGER.info("State changed from {} to {}", lastState, currentState);
         // Mark canvas as not ready
         canvasReady = false;
         // Update canvas synchronously on EDT and wait

@@ -13,7 +13,6 @@ public final class ITetromino extends AbstractTetromino<ITetromino> {
     {{0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}, {0, 1, 0, 0}},
   };
 
-  /** The standard color for I piece. */
   private static final Color COLOR = Color.CYAN;
 
   /**

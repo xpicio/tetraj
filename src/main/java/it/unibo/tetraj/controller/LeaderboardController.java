@@ -43,7 +43,7 @@ public final class LeaderboardController implements Controller {
   /** {@inheritDoc} */
   @Override
   public void enter(final GameSession gameSession) {
-    model = new LeaderboardModel(gameSession, applicationContext.getLeaderboard().getTopEntries());
+    model = new LeaderboardModel(applicationContext.getLeaderboard().getTopEntries());
     resources.playBackgroundMusic("menuLoop.wav", MUSIC_VOLUME);
     setupKeyBindings();
     LOGGER.info("Entering leaderboard state");

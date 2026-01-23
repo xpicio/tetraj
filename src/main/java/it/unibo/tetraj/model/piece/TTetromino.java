@@ -13,7 +13,6 @@ public final class TTetromino extends AbstractTetromino<TTetromino> {
     {{0, 1, 0}, {1, 1, 0}, {0, 1, 0}},
   };
 
-  /** The standard color for T piece. */
   private static final Color COLOR = Color.MAGENTA;
 
   /**

@@ -13,7 +13,6 @@ public final class OTetromino extends AbstractTetromino<OTetromino> {
     {{1, 1}, {1, 1}},
   };
 
-  /** The standard color for O piece. */
   private static final Color COLOR = Color.YELLOW;
 
   /**
