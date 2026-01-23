@@ -50,8 +50,8 @@ public class GameStateManager {
       // Initial state, allow transition to MENU only
       return to == GameState.MENU;
     }
-    final Set<GameState> valid = validTransitions.get(from);
-    return valid != null && valid.contains(to);
+
+    return validTransitions.get(from).contains(to);
   }
 
   /**

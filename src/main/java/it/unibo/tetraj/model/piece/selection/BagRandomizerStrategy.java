@@ -53,5 +53,6 @@ public final class BagRandomizerStrategy implements PieceSelectionStrategy {
   @Override
   public void reset() {
     bag.clear();
+    LOGGER.debug("Reset called");
   }
 }

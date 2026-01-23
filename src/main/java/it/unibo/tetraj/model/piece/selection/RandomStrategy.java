@@ -38,15 +38,15 @@ public final class RandomStrategy implements PieceSelectionStrategy {
   @Override
   public Class<? extends AbstractTetromino<?>> next() {
     final int index = random.nextInt(availableTypes.size());
-    final Class<? extends AbstractTetromino<?>> selectedPiece = availableTypes.get(index);
-    LOGGER.debug("Randomly selected piece: {}", selectedPiece.getSimpleName());
-    return selectedPiece;
+    final Class<? extends AbstractTetromino<?>> currentPiece = availableTypes.get(index);
+
+    LOGGER.debug("Spawning piece {}", currentPiece.getSimpleName());
+    return currentPiece;
   }
 
   /** {@inheritDoc} */
   @Override
   public void reset() {
-    // No state to reset in pure random selection
-    LOGGER.debug("Reset called - no action needed for random strategy");
+    LOGGER.debug("Reset called, no action needed for random strategy");
   }
 }

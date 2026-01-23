@@ -193,7 +193,7 @@ public final class GameSession {
         score,
         level,
         linesCleared,
-        lastFrame != null ? lastFrame.getWidth() * lastFrame.getHeight() : 0,
+        lastFrame != null ? lastFrame.getWidth() * lastFrame.getHeight() * lastFrame.getType() : 0,
         gameStartTime,
         gameEndTime);
   }
@@ -244,15 +244,17 @@ public final class GameSession {
    *
    * @param img1 The first image to compare
    * @param img2 The second image to compare
-   * @return true if the images have the same dimensions and type, false otherwise
+   * @return true if the images have the same dimensions and type, or both are null
    */
   private static boolean bufferedImagesEqual(final BufferedImage img1, final BufferedImage img2) {
+    if (img1 == null && img2 == null) {
+      return true;
+    }
     if (img1 == null || img2 == null) {
       return false;
     }
 
-    return Objects.equals(img1, img2)
-        && img1.getWidth() == img2.getWidth()
+    return img1.getWidth() == img2.getWidth()
         && img1.getHeight() == img2.getHeight()
         && img1.getType() == img2.getType();
   }
