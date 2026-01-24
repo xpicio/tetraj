@@ -7,6 +7,7 @@ import it.unibo.tetraj.controller.LeaderboardController;
 import it.unibo.tetraj.controller.MenuController;
 import it.unibo.tetraj.controller.PlayController;
 import it.unibo.tetraj.model.leaderboard.Leaderboard;
+import it.unibo.tetraj.util.ApplicationProperties;
 import it.unibo.tetraj.util.Logger;
 import it.unibo.tetraj.util.LoggerFactory;
 import it.unibo.tetraj.util.ResourceManager;
@@ -24,6 +25,7 @@ public final class ApplicationContext {
   private static final String SEPARATOR = "========================================";
   private static final String TITLE = "      TETRAJ - A Java Tetris Clone      ";
   private static final ApplicationContext INSTANCE = new ApplicationContext();
+  private final ApplicationProperties applicationProperties;
   private GameEngine gameEngine;
   private GameStateManager stateManager;
   private Leaderboard leaderboard;
@@ -32,7 +34,7 @@ public final class ApplicationContext {
 
   /** Private constructor for singleton pattern. */
   private ApplicationContext() {
-    // Singleton
+    applicationProperties = ApplicationProperties.getInstance();
   }
 
   /**
@@ -91,9 +93,9 @@ public final class ApplicationContext {
     LOGGER.info(SEPARATOR);
     LOGGER.info(TITLE);
     LOGGER.info(SEPARATOR);
-    LOGGER.info("Starting game...");
-    LOGGER.info("Java Version: " + System.getProperty("java.version"));
-    LOGGER.info("OS: " + System.getProperty("os.name"));
+    LOGGER.info(String.format("Game version: %s", applicationProperties.getAppVersion()));
+    LOGGER.info(String.format("Java Version: %s", System.getProperty("java.version")));
+    LOGGER.info(String.format("OS: %s", System.getProperty("os.name")));
     LOGGER.info(SEPARATOR);
     // Register shutdown hook to handle SIGINT and SIGTERM signals
     addShutdownHook();
