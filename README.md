@@ -1,5 +1,7 @@
 # Tetraj
 
+[![codecov](https://codecov.io/gh/xpicio/tetraj/branch/main/graph/badge.svg)](https://codecov.io/gh/xpicio/tetraj)
+
 Tetraj è una riproduzione del videogioco Tetris sviluppato durante il corso di Programmazione ad Oggetti. Università di Bologna, Corso di Laurea in Ingegneria e Scienze Informatiche. Anno accademico 2024/2025.
 
 ## Come giocare
@@ -91,7 +93,12 @@ I punti vengono moltiplicati per il livello corrente. Il livello aumenta ogni 10
 
 # Pulizia completa
 ./gradlew clean
+
+# Genera report coverage (per Coverage Gutters o CodeCov)
+./gradlew test jacocoTestReport
 ```
+
+Per visualizzare la coverage in VSCode, installare l'estensione [Coverage Gutters](https://marketplace.visualstudio.com/items?itemName=ryanluker.vscode-coverage-gutters) e dopo aver eseguito i test con JaCoCo, premere `Cmd+Shift+8` (o `Ctrl+Shift+8` su Windows/Linux) per mostrare la coverage, `Cmd+Shift+9` (o `Ctrl+Shift+9`) per nasconderla.
 
 ## Download ed esecuzione
 
