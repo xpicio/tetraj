@@ -1,16 +1,258 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[12pt,a4paper]{report}
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{parskip}
 
-\title{Test LaTeX su Mac}
-\author{Patrizio Bertozzi [xpicio@gmail.com]}
-\date{\today}
+\geometry{margin=2.5cm}
+
+% Configurazione hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+}
+
+\title{
+    \textbf{Tetraj} \\
+    \large Progetto di Programmazione ad Oggetti (12 CFU)
+}
+\author{
+    Patrizio Bertozzi \\
+    patrizio.bertozzi@studio.unibo.it
+}
+\date{
+    Università di Bologna \\
+    Corso di Laurea in Ingegneria e Scienze Informatiche \\
+    \vspace{0.5cm}
+    Anno Accademico 2024/2025
+}
 
 \begin{document}
-\maketitle
 
-\section{Hello World}
-Questo è un test di \LaTeX\!
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\tableofcontents
+\newpage
+
+\chapter{Analisi}
+
+\section{Descrizione e requisiti}
+
+Tetraj è una riproduzione del videogioco Tetris~\cite{tetriswiki}. Il giocatore manipola forme geometriche chiamate tetromini (pezzi composti da quattro blocchi quadrati) che cadono dall'alto dell'area di gioco. L'obiettivo è posizionare i tetromini completando righe orizzontali senza lasciare spazi vuoti: le righe completate scompaiono e il giocatore guadagna punti. La partita termina quando i pezzi si accumulano fino a raggiungere la parte superiore dell'area di gioco.
+
+I tetromini sono sette, identificati da una lettera che ne richiama la forma: I (linea di 4 blocchi), O (quadrato), T, S, Z, J e L. Ogni tetromino ha un colore distintivo. L'area di gioco ha dimensioni standard: 10 celle in larghezza e 20 in altezza.
+
+\subsection{Requisiti funzionali}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Gestione dei tetromini}
+    \begin{itemize}
+        \item Supporto per tutti e sette i tetromini standard, ciascuno con il proprio colore
+        \item Rotazione in senso orario e antiorario
+        \item Caduta automatica con velocità crescente in base al livello
+        \item Movimento orizzontale (sinistra/destra)
+        \item Soft drop (discesa accelerata) e hard drop (caduta istantanea)
+    \end{itemize}
+
+    \item \textbf{Selezione dei pezzi}
+    \begin{itemize}
+        \item Due modalità di selezione: ``7-bag randomizer'' (moderna) dove i sette tetromini vengono mescolati e distribuiti ciclicamente, oppure selezione completamente casuale (classica) come nel Tetris originale
+        \item Anteprima del prossimo pezzo in arrivo
+    \end{itemize}
+
+    \item \textbf{Hold}
+    \begin{itemize}
+        \item Possibilità di trattenere il pezzo corrente per usarlo successivamente
+        \item La funzione hold è utilizzabile una sola volta per ogni pezzo che cade
+    \end{itemize}
+
+    \item \textbf{Ghost piece}
+    \begin{itemize}
+        \item Visualizzazione di un'ombra che indica dove atterrerà il tetromino corrente
+    \end{itemize}
+
+    \item \textbf{Wall kick}
+    \begin{itemize}
+        \item Spostamento automatico del pezzo in una posizione valida quando una rotazione causerebbe collisione
+    \end{itemize}
+
+    \item \textbf{Linee e punteggio}
+    \begin{itemize}
+        \item Eliminazione delle righe completamente piene
+        \item Punteggio basato sul numero di righe eliminate simultaneamente
+        \item Bonus significativo per il ``Tetris'' (4 righe contemporanee)
+        \item Punti bonus per il soft drop proporzionali alla distanza percorsa
+        \item Punti bonus per l'hard drop proporzionali alla distanza di caduta
+    \end{itemize}
+
+    \item \textbf{Livelli e velocità}
+    \begin{itemize}
+        \item Aumento del livello ogni 10 righe completate
+        \item Due curve di velocità: valori predefiniti per livello (classica) oppure formula di crescita continua (moderna)
+    \end{itemize}
+
+    \item \textbf{Stati e controlli}
+    \begin{itemize}
+        \item Menu principale, partita in corso, game over
+        \item Pausa durante il gioco
+        \item Effetti sonori per le azioni principali
+    \end{itemize}
+
+    \item \textbf{Classifica}
+    \begin{itemize}
+        \item Memorizzazione dei 10 migliori punteggi ottenuti
+        \item Richiesta del nickname al giocatore se il punteggio entra in classifica
+        \item Persistenza della classifica
+        \item Visualizzazione della classifica al termine della partita
+    \end{itemize}
+\end{itemize}
+
+\subsection{Requisiti non funzionali}
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Portabilità}
+    \begin{itemize}
+        \item Esecuzione su Windows, macOS e Linux
+    \end{itemize}
+
+    \item \textbf{Prestazioni}
+    \begin{itemize}
+        \item Frame rate fluido e costante
+        \item Assenza di flickering durante il rendering
+    \end{itemize}
+
+    \item \textbf{Usabilità}
+    \begin{itemize}
+        \item Visualizzazione chiara di: area di gioco, pezzo corrente, prossimo pezzo, pezzo trattenuto, punteggio, livello, righe completate
+    \end{itemize}
+\end{itemize}
+
+\section{Modello del Dominio}
+
+Il dominio di Tetraj ruota attorno a poche entità fondamentali.
+
+L'elemento centrale è il \textbf{tetromino}, una forma geometrica composta da quattro blocchi. Esistono sette tipi di tetromino (I, O, T, S, Z, J, L), ciascuno con una forma e un colore caratteristici~\cite{tetromino}. Ogni tetromino possiede una posizione nell'area di gioco e uno stato di rotazione. Un tetromino può muoversi orizzontalmente, cadere verso il basso e ruotare.
+
+L'\textbf{area di gioco} è una griglia rettangolare (10 celle in larghezza e 20 in altezza) che contiene i blocchi dei tetromini già posizionati. L'area di gioco è responsabile di verificare se una posizione è valida (non fuori dai bordi, non sovrapposta ad altri blocchi), di accogliere i tetromini quando si depositano, e di rilevare e rimuovere le righe complete.
+
+La \textbf{partita} rappresenta una sessione di gioco completa. Una partita tiene traccia del punteggio, del livello corrente, del numero di righe eliminate, e gestisce la successione dei tetromini: il pezzo corrente in caduta, il prossimo pezzo in attesa, e l'eventuale pezzo trattenuto (held). La partita determina quando il gioco termina, ovvero quando un nuovo tetromino non può essere posizionato in cima all'area di gioco.
+
+La \textbf{strategia di selezione} determina quale sarà il prossimo tetromino. Le due modalità (classica e moderna) differiscono nel criterio di scelta ma condividono lo stesso ruolo: fornire il prossimo pezzo alla partita.
+
+La \textbf{strategia di velocità} determina quanto rapidamente i tetromini cadono in base al livello corrente. Anche qui le due modalità (classica e moderna) differiscono nella formula di calcolo ma hanno lo stesso scopo.
+
+La \textbf{classifica} mantiene l'elenco dei migliori punteggi ottenuti. Ogni voce della classifica è rappresentata da un \textbf{record} che associa un punteggio ad altre informazioni rilevanti (ad esempio la data). La classifica è ordinata in modo decrescente per punteggio e può avere un numero massimo di 10 voci.
+
+Infine il \textbf{giocatore} interagisce con la partita attraverso comandi: spostare il pezzo, ruotarlo, farlo cadere rapidamente, metterlo in hold, mettere in pausa.
+
+% Placeholder per lo schema UML
+\vspace{1cm}
+\noindent\textit{[Schema UML del dominio: da inserire]}
+
+\appendix
+
+\chapter{Guida utente}
+
+\section{Avvio del gioco}
+
+Per avviare Tetraj è necessario avere Java 21 (o versione successiva)~\cite{adoptium} installato sul proprio sistema. Il gioco si avvia eseguendo il file \texttt{tetraj.jar} con il comando:
+
+\begin{verbatim}
+java -jar tetraj.jar
+\end{verbatim}
+
+\section{Schermata iniziale}
+
+All'avvio viene mostrato il menu principale. Da qui è possibile:
+
+\begin{itemize}
+    \item Premere \textbf{INVIO} per iniziare una nuova partita
+    \item Premere \textbf{L} per visualizzare la classifica dei punteggi
+    \item Premere \textbf{ESC} per uscire dal gioco
+\end{itemize}
+
+\section{Durante la partita}
+
+Una volta avviata la partita, sullo schermo sono visibili: l'area di gioco centrale dove cadono i pezzi, il prossimo pezzo in arrivo, l'eventuale pezzo messo da parte, il punteggio, il livello e il numero di linee completate.
+
+I controlli disponibili sono:
+
+\begin{itemize}
+    \item \textbf{Freccia sinistra} o \textbf{A}: sposta il pezzo a sinistra
+    \item \textbf{Freccia destra} o \textbf{D}: sposta il pezzo a destra
+    \item \textbf{Freccia giù} o \textbf{S}: accelera la caduta del pezzo (soft drop)
+    \item \textbf{Barra spaziatrice}: fa cadere istantaneamente il pezzo (hard drop)
+    \item \textbf{Freccia su} o \textbf{W}: ruota il pezzo in senso orario
+    \item \textbf{CTRL} o \textbf{Z}: ruota il pezzo in senso antiorario
+    \item \textbf{SHIFT} o \textbf{C}: mette da parte il pezzo corrente per usarlo dopo
+    \item \textbf{P}: mette in pausa la partita
+    \item \textbf{ESC}: torna al menu principale
+\end{itemize}
+
+Durante la pausa, premere \textbf{P} o \textbf{ESC} per riprendere a giocare.
+
+\section{Punteggio}
+
+Il punteggio aumenta completando linee orizzontali. Più linee si completano contemporaneamente, più punti si ottengono:
+
+\begin{itemize}
+    \item 1 linea: 100 punti
+    \item 2 linee: 300 punti
+    \item 3 linee: 500 punti
+    \item 4 linee (Tetris): 800 punti
+\end{itemize}
+
+I punti vengono moltiplicati per il livello corrente. Inoltre, il soft drop assegna 1 punto bonus per ogni cella percorsa, mentre l'hard drop ne assegna 2 per ogni cella di altezza da cui cade il pezzo.
+
+Il livello aumenta ogni 10 linee completate, rendendo la caduta dei pezzi progressivamente più veloce.
+
+\section{Fine partita e classifica}
+
+La partita termina quando non c'è più spazio per posizionare un nuovo pezzo. Viene mostrata la schermata di fine partita con il punteggio ottenuto. Da qui è possibile:
+
+\begin{itemize}
+    \item Premere \textbf{INVIO} per iniziare una nuova partita
+    \item Premere \textbf{L} per visualizzare la classifica
+    \item Premere \textbf{ESC} per tornare al menu principale
+\end{itemize}
+
+Dalla schermata della classifica, premere \textbf{ESC} per tornare al menu.
+
+\chapter{Esercitazioni di laboratorio}
+
+\section*{patrizio.bertozzi@studio.unibo.it}
+
+\begin{itemize}
+    \item Laboratorio 07: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=177162#p246015}
+    \item Laboratorio 09: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=179154#p247849}
+    \item Laboratorio 10: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=180101#p248934}
+    \item Laboratorio 11: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=181206#p251421}
+\end{itemize}
+
+\begin{thebibliography}{9}
+
+\bibitem{tetriswiki}
+TetrisWiki,
+\textit{Tetris Wiki -- Enciclopedia della community dedicata al gioco Tetris},
+\url{https://tetris.wiki/Tetris.wiki}
+
+\bibitem{tetromino}
+TetrisWiki,
+\textit{Tetromino -- Descrizione delle forme e dei colori ufficiali dei sette tetromini},
+\url{https://tetris.wiki/Tetromino}
+
+\bibitem{adoptium}
+Eclipse Adoptium,
+\textit{Temurin JDK 21 -- Pagina di download},
+\url{https://adoptium.net/temurin/releases?version=21}
+
+\end{thebibliography}
 
 \end{document}
