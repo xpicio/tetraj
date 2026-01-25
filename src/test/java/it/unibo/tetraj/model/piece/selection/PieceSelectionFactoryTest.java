@@ -83,8 +83,6 @@ class PieceSelectionFactoryTest {
   @Test
   @DisplayName("should create strategy from default configuration")
   void shouldCreateStrategyFromDefaultConfiguration() {
-    // Arrange - no specific arrangement needed
-
     // Act
     final PieceSelectionStrategy result = PieceSelectionFactory.create();
 

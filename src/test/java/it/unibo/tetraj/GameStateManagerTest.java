@@ -212,8 +212,6 @@ class GameStateManagerTest {
   @Test
   @DisplayName("should return correct current controller after state switch")
   void shouldReturnCorrectCurrentControllerAfterStateSwitch() {
-    // Arrange - done in setUp()
-
     // Act
     stateManager.switchTo(GameState.MENU);
     final Controller controller1 = stateManager.getCurrentController();
@@ -229,8 +227,6 @@ class GameStateManagerTest {
   @Test
   @DisplayName("should validate all transitions from PLAYING state")
   void shouldValidateAllTransitionsFromPlayingState() {
-    // Arrange - done in setUp()
-
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.PLAYING, GameState.GAME_OVER));
     assertTrue(stateManager.isValidTransition(GameState.PLAYING, GameState.MENU));
@@ -240,8 +236,6 @@ class GameStateManagerTest {
   @Test
   @DisplayName("should validate all transitions from MENU state")
   void shouldValidateAllTransitionsFromMenuState() {
-    // Arrange - done in setUp()
-
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.MENU, GameState.PLAYING));
     assertTrue(stateManager.isValidTransition(GameState.MENU, GameState.LEADERBOARD));
@@ -252,8 +246,6 @@ class GameStateManagerTest {
   @Test
   @DisplayName("should validate all transitions from GAME_OVER state")
   void shouldValidateAllTransitionsFromGameOverState() {
-    // Arrange - done in setUp()
-
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.MENU));
     assertTrue(stateManager.isValidTransition(GameState.GAME_OVER, GameState.PLAYING));
@@ -279,8 +271,6 @@ class GameStateManagerTest {
   @Test
   @DisplayName("should validate all transitions from LEADERBOARD state")
   void shouldValidateAllTransitionsFromLeaderboardState() {
-    // Arrange - done in setUp()
-
     // Act & Assert
     assertTrue(stateManager.isValidTransition(GameState.LEADERBOARD, GameState.MENU));
     assertFalse(stateManager.isValidTransition(GameState.LEADERBOARD, GameState.PLAYING));

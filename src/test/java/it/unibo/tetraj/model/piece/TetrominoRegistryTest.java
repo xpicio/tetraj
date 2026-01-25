@@ -23,8 +23,6 @@ class TetrominoRegistryTest {
   @Test
   @DisplayName("should contain exactly 7 tetromino types")
   void registryShouldContainSevenTypes() {
-    // Arrange - done in setUp()
-
     // Act
     final List<Class<? extends AbstractTetromino<?>>> types = registry.getAvailableTypes();
 
@@ -35,8 +33,6 @@ class TetrominoRegistryTest {
   @Test
   @DisplayName("should create all tetromino types successfully")
   void registryShouldCreateAllTypes() {
-    // Arrange - done in setUp()
-
     // Arrange
     final List<Class<? extends AbstractTetromino<?>>> types = registry.getAvailableTypes();
 

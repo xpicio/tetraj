@@ -29,8 +29,6 @@ class RandomStrategyTest {
   @Test
   @DisplayName("should return a non-null tetromino class")
   void shouldReturnNonNullTetrominoClass() {
-    // Arrange - done in setUp()
-
     // Act
     final Class<? extends AbstractTetromino<?>> result = strategy.next();
 
@@ -41,8 +39,6 @@ class RandomStrategyTest {
   @Test
   @DisplayName("should return a valid tetromino type from available types")
   void shouldReturnValidTetrominoType() {
-    // Arrange - done in setUp()
-
     // Act
     final Class<? extends AbstractTetromino<?>> result = strategy.next();
 
@@ -68,8 +64,6 @@ class RandomStrategyTest {
   @Test
   @DisplayName("should never fail when calling next() many times")
   void shouldNeverFailOnManyCalls() {
-    // Arrange - done in setUp()
-
     // Act & Assert
     for (int i = 0; i < MAX_ITERATIONS; i++) {
       final Class<? extends AbstractTetromino<?>> result = strategy.next();

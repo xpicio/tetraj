@@ -33,8 +33,6 @@ class BagRandomizerStrategyTest {
   @Test
   @DisplayName("should return a non-null tetromino class")
   void shouldReturnNonNullTetrominoClass() {
-    // Arrange - done in setUp()
-
     // Act
     final Class<? extends AbstractTetromino<?>> result = strategy.next();
 
@@ -45,8 +43,6 @@ class BagRandomizerStrategyTest {
   @Test
   @DisplayName("should return a valid tetromino type from available types")
   void shouldReturnValidTetrominoType() {
-    // Arrange - done in setUp()
-
     // Act
     final Class<? extends AbstractTetromino<?>> result = strategy.next();
 
