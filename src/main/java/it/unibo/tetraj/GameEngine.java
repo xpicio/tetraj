@@ -209,6 +209,13 @@ public final class GameEngine implements Runnable {
               currentController.handleInput(e.getKeyCode());
             }
           }
+
+          @Override
+          public void keyReleased(final KeyEvent e) {
+            if (currentController != null) {
+              currentController.handleInputRelease(e.getKeyCode());
+            }
+          }
         });
     // Request focus
     SwingUtilities.invokeLater(

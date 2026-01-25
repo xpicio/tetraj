@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 public final class PlayModel {
 
   private static final int[] LINE_POINTS = {0, 100, 300, 500, 800};
+  private static final double SOFT_DROP_ACTIVATION_DELAY_MS = 133.0;
   private final TetrominoFactory tetrominoFactory;
   private final SpeedStrategy speedStrategy;
   private final Board board;
@@ -30,6 +31,9 @@ public final class PlayModel {
   private double fallSpeed;
   private boolean paused;
   private boolean gameOver;
+  private boolean softDropping;
+  private boolean softDropRequested;
+  private double softDropHoldTime;
 
   /** Creates a new play model. */
   public PlayModel() {
@@ -51,6 +55,9 @@ public final class PlayModel {
     canHold = true;
     heldPiece = null;
     gameOver = false;
+    softDropping = false;
+    softDropRequested = false;
+    softDropHoldTime = 0;
     currentPiece = tetrominoFactory.create();
     centerPieceToTop(currentPiece);
     nextPiece = tetrominoFactory.create();
@@ -67,9 +74,25 @@ public final class PlayModel {
       return;
     }
 
-    fallTimer += deltaTime * 1000;
-    if (fallTimer >= fallSpeed) {
+    final double deltaMs = deltaTime * 1000;
+
+    // Handle soft drop activation delay
+    if (softDropRequested && !softDropping) {
+      softDropHoldTime += deltaMs;
+      if (softDropHoldTime >= SOFT_DROP_ACTIVATION_DELAY_MS) {
+        softDropping = true;
+      }
+    }
+
+    final double currentSpeed =
+        softDropping ? speedStrategy.getSoftDropSpeed(level - 1) : fallSpeed;
+
+    fallTimer += deltaMs;
+    if (fallTimer >= currentSpeed) {
       fallTimer = 0;
+      if (softDropping) {
+        score += 1;
+      }
       moveDown();
     }
   }
@@ -113,6 +136,33 @@ public final class PlayModel {
     }
 
     return false;
+  }
+
+  /**
+   * Requests soft drop mode. After a short delay, piece falls faster and scores 1 point per cell.
+   */
+  public void startSoftDrop() {
+    if (!softDropRequested) {
+      softDropHoldTime = 0;
+      softDropping = false;
+      softDropRequested = true;
+    }
+  }
+
+  /** Stops soft drop mode. Returns to normal fall speed. */
+  public void stopSoftDrop() {
+    softDropRequested = false;
+    softDropping = false;
+    softDropHoldTime = 0;
+  }
+
+  /**
+   * Checks if soft drop mode is active.
+   *
+   * @return true if soft dropping
+   */
+  public boolean isSoftDropping() {
+    return softDropping;
   }
 
   /** Hard drops the current piece. */
@@ -346,6 +396,10 @@ public final class PlayModel {
     centerPieceToTop(nextPiece);
     canHold = true;
     fallTimer = 0;
+    // Reset soft drop state for new piece
+    softDropping = false;
+    softDropRequested = false;
+    softDropHoldTime = 0;
     if (!board.isValidPosition(currentPiece)) {
       gameOver = true;
     }

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import it.unibo.tetraj.model.piece.AbstractTetromino;
+import it.unibo.tetraj.model.piece.SingleCellTetromino;
 import java.awt.Color;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ class BoardTest {
     helper.fillRow(board, THIRD_BOTTOM_ROW, Color.GREEN);
 
     // Place a marker piece above to verify shifting
-    board.placeTetromino(new TestTetromino(TEST_COLUMN, FOURTH_BOTTOM_ROW, Color.YELLOW));
+    board.placeTetromino(new SingleCellTetromino(TEST_COLUMN, FOURTH_BOTTOM_ROW, Color.YELLOW));
 
     // Act
     final List<Integer> clearedLines = board.clearCompletedLines();
@@ -106,8 +106,8 @@ class BoardTest {
     helper.fillRow(board, FIFTH_BOTTOM_ROW, Color.GREEN);
 
     // Place markers in the gap rows to verify correct shifting
-    board.placeTetromino(new TestTetromino(TEST_COLUMN_2, SECOND_BOTTOM_ROW, Color.YELLOW));
-    board.placeTetromino(new TestTetromino(TEST_COLUMN_2, FOURTH_BOTTOM_ROW, Color.CYAN));
+    board.placeTetromino(new SingleCellTetromino(TEST_COLUMN_2, SECOND_BOTTOM_ROW, Color.YELLOW));
+    board.placeTetromino(new SingleCellTetromino(TEST_COLUMN_2, FOURTH_BOTTOM_ROW, Color.CYAN));
 
     // Act
     final List<Integer> clearedLines = board.clearCompletedLines();
@@ -142,7 +142,7 @@ class BoardTest {
     helper.fillRow(board, FOURTH_BOTTOM_ROW, Color.YELLOW);
 
     // Place a marker above to verify shifting
-    board.placeTetromino(new TestTetromino(TEST_COLUMN, FIFTH_BOTTOM_ROW, Color.MAGENTA));
+    board.placeTetromino(new SingleCellTetromino(TEST_COLUMN, FIFTH_BOTTOM_ROW, Color.MAGENTA));
 
     // Act
     final List<Integer> clearedLines = board.clearCompletedLines();
@@ -196,7 +196,8 @@ class BoardTest {
   @DisplayName("should detect game over when top row has pieces")
   void shouldDetectGameOverWhenTopRowHasPieces() {
     // Arrange
-    final TestTetromino testTetromino = new TestTetromino(TEST_COLUMN, TOP_ROW, Color.RED);
+    final SingleCellTetromino testTetromino =
+        new SingleCellTetromino(TEST_COLUMN, TOP_ROW, Color.RED);
 
     // Act - place piece at top
     board.placeTetromino(testTetromino);
@@ -230,7 +231,7 @@ class BoardTest {
   @DisplayName("should return true for valid position")
   void shouldReturnTrueForValidPosition() {
     // Arrange
-    final TestTetromino piece = new TestTetromino(TEST_COLUMN, MIDDLE_ROW, Color.BLUE);
+    final SingleCellTetromino piece = new SingleCellTetromino(TEST_COLUMN, MIDDLE_ROW, Color.BLUE);
 
     // Act & Assert
     assertTrue(board.isValidPosition(piece), "Valid position should return true");
@@ -240,10 +241,10 @@ class BoardTest {
   @DisplayName("should return false for position with collision")
   void shouldReturnFalseForPositionWithCollision() {
     // Arrange - place a piece first
-    board.placeTetromino(new TestTetromino(TEST_COLUMN, MIDDLE_ROW, Color.RED));
+    board.placeTetromino(new SingleCellTetromino(TEST_COLUMN, MIDDLE_ROW, Color.RED));
 
     // Try to place another piece at same position
-    final TestTetromino piece = new TestTetromino(TEST_COLUMN, MIDDLE_ROW, Color.BLUE);
+    final SingleCellTetromino piece = new SingleCellTetromino(TEST_COLUMN, MIDDLE_ROW, Color.BLUE);
 
     // Act & Assert
     assertFalse(board.isValidPosition(piece), "Collision should return false");
@@ -253,15 +254,15 @@ class BoardTest {
   @DisplayName("should return false for out of bounds position")
   void shouldReturnFalseForOutOfBoundsPosition() {
     // Test left boundary
-    TestTetromino piece = new TestTetromino(NEGATIVE_POSITION, MIDDLE_ROW, Color.BLUE);
+    SingleCellTetromino piece = new SingleCellTetromino(NEGATIVE_POSITION, MIDDLE_ROW, Color.BLUE);
     assertFalse(board.isValidPosition(piece), "Left out of bounds should return false");
 
     // Test right boundary
-    piece = new TestTetromino(OUT_OF_BOUNDS_COLUMN, MIDDLE_ROW, Color.BLUE);
+    piece = new SingleCellTetromino(OUT_OF_BOUNDS_COLUMN, MIDDLE_ROW, Color.BLUE);
     assertFalse(board.isValidPosition(piece), "Right out of bounds should return false");
 
     // Test bottom boundary
-    piece = new TestTetromino(TEST_COLUMN, OUT_OF_BOUNDS_ROW, Color.BLUE);
+    piece = new SingleCellTetromino(TEST_COLUMN, OUT_OF_BOUNDS_ROW, Color.BLUE);
     assertFalse(board.isValidPosition(piece), "Bottom out of bounds should return false");
   }
 
@@ -277,7 +278,7 @@ class BoardTest {
      */
     public void fillRow(final Board board, final int row, final Color color) {
       for (int col = 0; col < board.getWidth(); col++) {
-        board.placeTetromino(new TestTetromino(col, row, color));
+        board.placeTetromino(new SingleCellTetromino(col, row, color));
       }
     }
 
@@ -290,56 +291,8 @@ class BoardTest {
      */
     public void partialFillRow(final Board board, final int row, final int gaps) {
       for (int col = 0; col < board.getWidth() - gaps; col++) {
-        board.placeTetromino(new TestTetromino(col, row, Color.CYAN));
+        board.placeTetromino(new SingleCellTetromino(col, row, Color.CYAN));
       }
-    }
-  }
-
-  /** Test tetromino that represents a single 1x1 cell. Used for precise placement in tests. */
-  private static class TestTetromino extends AbstractTetromino<TestTetromino> {
-
-    private static final int[][][] SHAPES = {
-      {{1}}, {{1}}, {{1}}, {{1}},
-    };
-
-    private final Color color;
-
-    /**
-     * Creates a 1x1 test tetromino.
-     *
-     * @param x The x position
-     * @param y The y position
-     * @param color The color
-     */
-    TestTetromino(final int x, final int y, final Color color) {
-      super(x, y);
-      this.color = color;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @implNote Returns the internal array directly without defensive copying. While performance is
-     *     not critical in tests, this mirrors the production implementation for consistency. The
-     *     returned array is only accessed by the protected methods in AbstractTetromino and never
-     *     exposed publicly, maintaining proper encapsulation.
-     */
-    @Override
-    @SuppressWarnings("PMD.MethodReturnsInternalArray")
-    protected int[][][] getShapes() {
-      return SHAPES;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Color getColor() {
-      return color;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TestTetromino copy() {
-      return new TestTetromino(getX(), getY(), color);
     }
   }
 }

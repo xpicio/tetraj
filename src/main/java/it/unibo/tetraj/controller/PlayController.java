@@ -93,6 +93,12 @@ public final class PlayController implements Controller {
 
   /** {@inheritDoc} */
   @Override
+  public void handleInputRelease(final int keyCode) {
+    inputHandler.handleKeyRelease(keyCode);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Canvas getCanvas() {
     return view.getCanvas();
   }
@@ -139,9 +145,15 @@ public final class PlayController implements Controller {
     inputHandler.bindKey(
         KeyEvent.VK_RIGHT, new PlayCommand(model, PlayModel::moveRight, "moveRight"));
     inputHandler.bindKey(KeyEvent.VK_D, new PlayCommand(model, PlayModel::moveRight, "moveRight"));
-    // DOWN or S to soft drop
-    inputHandler.bindKey(KeyEvent.VK_DOWN, new PlayCommand(model, PlayModel::moveDown, "moveDown"));
-    inputHandler.bindKey(KeyEvent.VK_S, new PlayCommand(model, PlayModel::moveDown, "moveDown"));
+    // DOWN or S to soft drop (hold for continuous fast fall)
+    inputHandler.bindKey(
+        KeyEvent.VK_DOWN, new PlayCommand(model, PlayModel::startSoftDrop, "startSoftDrop"));
+    inputHandler.bindKey(
+        KeyEvent.VK_S, new PlayCommand(model, PlayModel::startSoftDrop, "startSoftDrop"));
+    inputHandler.bindKeyRelease(
+        KeyEvent.VK_DOWN, new PlayCommand(model, PlayModel::stopSoftDrop, "stopSoftDrop"));
+    inputHandler.bindKeyRelease(
+        KeyEvent.VK_S, new PlayCommand(model, PlayModel::stopSoftDrop, "stopSoftDrop"));
     // SPACE to hard drop
     inputHandler.bindKey(
         KeyEvent.VK_SPACE, new PlayCommand(model, PlayModel::hardDrop, "hardDrop"));

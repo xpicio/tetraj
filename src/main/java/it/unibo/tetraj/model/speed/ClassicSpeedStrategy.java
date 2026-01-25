@@ -30,6 +30,7 @@ public final class ClassicSpeedStrategy implements SpeedStrategy {
   /** {@inheritDoc} */
   @Override
   public double getSoftDropSpeed(final int level) {
-    return SOFT_DROP_MS;
+    // Soft drop should never be slower than normal fall speed
+    return Math.min(SOFT_DROP_MS, getFallSpeed(level));
   }
 }

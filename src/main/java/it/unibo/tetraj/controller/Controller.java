@@ -33,11 +33,21 @@ public interface Controller {
   void render();
 
   /**
-   * Handles input for this state.
+   * Handles key press input for this state.
    *
    * @param keyCode The key code of the pressed key
    */
   void handleInput(int keyCode);
+
+  /**
+   * Handles key release input for this state. Default implementation does nothing. Override in
+   * controllers that need key release handling (e.g., for soft drop).
+   *
+   * @param keyCode The key code of the released key
+   */
+  default void handleInputRelease(final int keyCode) {
+    // Default: do nothing
+  }
 
   /**
    * Gets the canvas for this state's view.

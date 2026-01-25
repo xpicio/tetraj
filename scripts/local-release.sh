@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 # Local release script for testing the build process
 # Usage: ./scripts/local-release.sh [version]
@@ -19,6 +19,7 @@ echo "Building shadow JAR..."
 
 # Copy JAR with version
 echo "Packaging JAR..."
+rm -fR tetraj-*.jar
 cp build/libs/tetraj-all.jar tetraj-$VERSION.jar
 cp build/libs/tetraj-all.jar tetraj.jar
 

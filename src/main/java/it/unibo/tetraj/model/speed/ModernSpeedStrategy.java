@@ -35,7 +35,9 @@ public final class ModernSpeedStrategy implements SpeedStrategy {
   /** {@inheritDoc} */
   @Override
   public double getSoftDropSpeed(final int level) {
-    // Soft drop is 20x faster than normal fall, with a minimum of 50ms
-    return Math.max(MIN_SOFT_DROP_MS, getFallSpeed(level) / SOFT_DROP_DIVISOR);
+    final double normalSpeed = getFallSpeed(level);
+
+    // Soft drop is 20x faster than normal fall, but never slower than normal speed
+    return Math.min(Math.max(MIN_SOFT_DROP_MS, normalSpeed / SOFT_DROP_DIVISOR), normalSpeed);
   }
 }

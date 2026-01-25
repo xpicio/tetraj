@@ -31,7 +31,7 @@ public final class MenuModel {
                 new Controls.ControlBinding("W or ↑", "Rotate clockwise"),
                 new Controls.ControlBinding("Z or CTRL", "Rotate counterclockwise"),
                 new Controls.ControlBinding("C or SHIFT", "Hold piece"),
-                new Controls.ControlBinding("S or ↓", "Soft Drop"),
+                new Controls.ControlBinding("Hold S or ↓", "Soft Drop"),
                 new Controls.ControlBinding("SPACE", "Hard Drop"),
                 new Controls.ControlBinding("P", "Pause")),
             List.of(
