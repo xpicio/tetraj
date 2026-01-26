@@ -120,5 +120,5 @@ Invoke-WebRequest -Uri "https://raw.githubusercontent.com/xpicio/tetraj/refs/hea
 
 Un ringraziamento a chi ha dedicato tempo a testare il gioco, segnalare bug e suggerire miglioramenti:
 
-- **Pietro Benini**
-- **Fabio Masini**
+- [Pietro Benini](https://github.com/pbenini)
+- [Fabio Masini](https://github.com/faxioman)
