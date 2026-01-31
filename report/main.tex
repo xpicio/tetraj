@@ -7,6 +7,7 @@
 \usepackage{enumitem}
 \usepackage{parskip}
 \usepackage{graphicx}
+\usepackage{float}
 
 \geometry{margin=2.5cm}
 
@@ -153,7 +154,7 @@ La \textbf{classifica} mantiene l'elenco dei migliori punteggi ottenuti. Ogni vo
 
 Infine il \textbf{giocatore} interagisce con la partita attraverso comandi: spostare il pezzo, ruotarlo, farlo cadere rapidamente, metterlo in hold, mettere in pausa.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{resources/game-model.png}
     \caption{Schema UML dell'analisi del problema, con rappresentate le entità principali ed i rapporti fra loro}
@@ -190,7 +191,7 @@ L'architettura garantisce inoltre la completa sostituibilità della View senza i
 
 Il gioco deve supportare diverse modalità di selezione del prossimo tetromino. La versione classica di Tetris usa una selezione puramente casuale, mentre le versioni moderne adottano il sistema ``7-bag randomizer'' che garantisce una distribuzione equa dei pezzi. La scelta della modalità deve essere configurabile senza modificare il codice.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{resources/piece-selection.png}
     \caption{Diagramma UML del pattern Strategy per la selezione dei pezzi}
@@ -209,7 +210,7 @@ La soluzione risulta estensibile (nuove strategie senza modificare codice esiste
 
 Le diverse schermate del gioco (menu, partita, game over, classifica) condividono la stessa logica di inizializzazione del canvas e del buffer strategy, ma differiscono nel contenuto da disegnare. Duplicare questa logica in ogni view violerebbe il principio DRY e renderebbe difficile la manutenzione.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{resources/abstract-view.png}
     \caption{Diagramma UML del pattern Template Method per il rendering delle View}
@@ -228,7 +229,7 @@ La soluzione elimina duplicazione e garantisce un'inizializzazione corretta e co
 
 I sette tetromini condividono comportamenti comuni (movimento, rotazione, posizione) ma differiscono per forma, colore e stati di rotazione. Serve una struttura che eviti duplicazione, garantisca copie type-safe, centralizzi la creazione e permetta estensioni future.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{resources/tetromino.png}
     \caption{Diagramma UML della gerarchia dei tetromini e del sistema di creazione (per semplicità sono mostrati solo 3 dei 7 tetromini)}
