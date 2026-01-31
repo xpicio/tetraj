@@ -6,6 +6,7 @@
 \usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{parskip}
+\usepackage{graphicx}
 
 \geometry{margin=2.5cm}
 
@@ -156,6 +157,112 @@ Infine il \textbf{giocatore} interagisce con la partita attraverso comandi: spos
 \vspace{1cm}
 \noindent\textit{[Schema UML del dominio: da inserire]}
 
+\chapter{Design}
+
+\section{Architettura}
+
+L'architettura di Tetraj segue il pattern architetturale \textbf{MVC} (Model-View-Controller)~\cite{mvc} combinato con una \textbf{macchina a stati finiti} (FSM)~\cite{fsm} per la gestione delle transizioni tra le diverse schermate del gioco.
+
+Il coordinamento tra i componenti è affidato a un \textbf{Service Locator}~\cite{servicelocator} che funge da punto centralizzato per l'accesso ai servizi condivisi; crea e collega i componenti all'avvio, e li rilascia allo spegnimento.
+
+Il \textbf{Game Loop}~\cite{gameloop} costituisce il cuore pulsante dell'applicazione: ad ogni iterazione interroga la macchina a stati per ottenere il controller attivo, ne aggiorna la logica e ne richiede il rendering.
+
+La gestione dell'input è disaccoppiata dalla logica di gioco tramite il pattern \textbf{Command}~\cite{command}: un gestore di input mappa i tasti a comandi, permettendo configurazioni diverse per ogni stato senza modificare la logica dei controller.
+
+Ogni schermata del gioco ha il proprio trittico MVC, composto dal \textbf{Model} (\texttt{PlayModel}, \texttt{MenuModel}, ecc.) contenente lo stato e la logica di dominio, dalla \textbf{View} (\texttt{PlayView}, \texttt{MenuView}, ecc.) che è responsabile esclusivamente del rendering ed estende una classe base comune per la gestione delle risorse grafiche, e infine dal \textbf{Controller} (\texttt{PlayController}, \texttt{MenuController}, ecc.) che implementa l'interfaccia \texttt{Controller} definendo il ciclo di vita (\texttt{enter}, \texttt{exit}), l'aggiornamento (\texttt{update}), il rendering (\texttt{render}), la gestione dell'input (\texttt{handleInput}, \texttt{handleInputRelease}) e l'esposizione del componente grafico (\texttt{getCanvas}) che il Game Loop monta nella finestra principale. Ogni controller possiede il proprio Model e la propria View, coordinandone l'interazione.
+
+Con questa architettura, aggiungere una nuova schermata al gioco richiede di creare una nuova terna MVC, registrare il nuovo stato nella macchina a stati e aggiungere il controller al Service Locator. Il Game Loop non necessita di alcuna modifica, garantendo un'estensione modulare del sistema senza impatti sulle componenti esistenti.
+
+L'architettura garantisce inoltre la completa sostituibilità della View senza impatti su Controller e Model. Le View non mantengono riferimenti al Model, ricevendolo solo come parametro per il rendering, e i Controller interagiscono con esse esclusivamente tramite l'interfaccia comune. I Model sono completamente agnostici rispetto alla tecnologia grafica. Per transitare ad una diversa libreria grafica sarebbe sufficiente reimplementare le classi View e adattare la gestione della finestra nel Game Loop; Controller e Model rimarrebbero invariati.
+
+% Placeholder per lo schema UML architetturale
+\vspace{1cm}
+\noindent\textit{[Schema UML architetturale: da inserire]}
+
+\section{Design dettagliato}
+
+\subsection{Selezione dei pezzi}
+
+\textbf{Problema}
+
+Il gioco deve supportare diverse modalità di selezione del prossimo tetromino. La versione classica di Tetris usa una selezione puramente casuale, mentre le versioni moderne adottano il sistema ``7-bag randomizer'' che garantisce una distribuzione equa dei pezzi. La scelta della modalità deve essere configurabile senza modificare il codice.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{resources/piece-selection.png}
+    \caption{Diagramma UML del pattern Strategy per la selezione dei pezzi}
+    \label{fig:piece-selection}
+\end{figure}
+
+\textbf{Soluzione}
+
+Come da Figura~\ref{fig:piece-selection} si è adottata una combinazione di \textbf{Strategy}~\cite{strategy} e \textbf{Simple Factory}~\cite{simplefactory}. L'interfaccia \texttt{PieceSelectionStrategy} definisce il contratto per la selezione (\texttt{next()} restituisce il prossimo tipo di tetromino, \texttt{reset()} reinizializza lo stato), mentre le implementazioni concrete (\texttt{RandomStrategy}, \texttt{BagRandomizerStrategy}) incapsulano i diversi algoritmi. Infine \texttt{PieceSelectionFactory}, in \texttt{create()}, legge la configurazione e istanzia la strategia appropriata.
+
+La soluzione risulta estensibile (nuove strategie senza modificare codice esistente), testabile (strategie isolabili), e configurabile a runtime. Al contrario di alternative basate su If/Else/Switch-case o con l'utilizzo di Enum.
+
+\subsection{Rendering delle View}
+
+\textbf{Problema}
+
+Le diverse schermate del gioco (menu, partita, game over, classifica) condividono la stessa logica di inizializzazione del canvas e del buffer strategy, ma differiscono nel contenuto da disegnare. Duplicare questa logica in ogni view violerebbe il principio DRY e renderebbe difficile la manutenzione.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{resources/abstract-view.png}
+    \caption{Diagramma UML del pattern Template Method per il rendering delle View}
+    \label{fig:abstract-view}
+\end{figure}
+
+\textbf{Soluzione}
+
+Come da Figura~\ref{fig:abstract-view} si è adottato il pattern \textbf{Template Method}~\cite{templatemethod}. \texttt{AbstractView<M>} definisce il metodo template \texttt{render(M model)} che gestisce l'inizializzazione del buffer strategy per poi delegare a \texttt{renderContent(M model)}. Le sottoclassi (\texttt{PlayView}, \texttt{MenuView}, \texttt{GameOverView}, \texttt{LeaderboardView}) implementano solo \texttt{renderContent()} con la propria logica di disegno; la classe base fornisce anche getter protetti per risorse comuni (font, dimensioni, colori).
+
+La soluzione elimina duplicazione e garantisce un'inizializzazione corretta e consistente, lasciando le sottoclassi focalizzate solo sul proprio disegno. Rispetto a una soluzione basata su composizione, risulta meno flessibile in scenari più complessi.
+
+\subsection{Tetromini: gerarchia e creazione}
+
+\textbf{Problema}
+
+I sette tetromini condividono comportamenti comuni (movimento, rotazione, posizione) ma differiscono per forma, colore e stati di rotazione. Serve una struttura che eviti duplicazione, garantisca copie type-safe, centralizzi la creazione e permetta estensioni future.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{resources/tetromino.png}
+    \caption{Diagramma UML della gerarchia dei tetromini e del sistema di creazione (per semplicità sono mostrati solo 3 dei 7 tetromini)}
+    \label{fig:tetromino}
+\end{figure}
+
+\textbf{Soluzione}
+
+Come da Figura~\ref{fig:tetromino} si è strutturata una gerarchia a tre livelli combinata con un sistema di creazione centralizzato.
+
+L'interfaccia \texttt{Tetromino} definisce il contratto pubblico. La classe astratta \texttt{AbstractTetromino<T extends AbstractTetromino<T>{>}} implementa i comportamenti comuni usando \textbf{F-bounded Polymorphism}~\cite{fbounded}: il parametro di tipo ricorsivo garantisce che \texttt{copy()} restituisca il tipo concreto invece di un generico \texttt{Tetromino}. I tetromini concreti (\texttt{ITetromino}, \texttt{OTetromino}, \texttt{TTetromino}, ecc.) estendono la classe astratta implementando solo i metodi specifici: \texttt{getShapes()}, \texttt{getColor()}, \texttt{copy()}.
+
+Per la creazione, \texttt{TetrominoRegistry} implementa il pattern \textbf{Registry}~\cite{registry} (come \textbf{Singleton}~\cite{singleton}) mantenendo una mappa che associa ogni classe di tetromino alla sua funzione di creazione. \texttt{TetrominoFactory} usa la strategia di selezione per ottenere il tipo da creare e delega al registry per l'inizializzazione effettiva.
+
+La soluzione garantisce type-safety a compile-time, codice DRY ed estensibilità: aggiungere un nuovo tetromino richiede solo di creare la classe e registrarla. Al contrario, alternative senza generici avrebbero richiesto cast espliciti, mentre uno Switch-case sulla classe avrebbe violato l'Open/Closed Principle.
+
+\chapter{Sviluppo}
+
+\section{Testing automatizzato}
+
+Il progetto utilizza diverse librerie per garantire la qualità del codice attraverso test automatizzati:
+
+\begin{itemize}
+    \item \textbf{JUnit 5}: framework principale per la scrittura e l'esecuzione dei test unitari.
+    \item \textbf{JUnit Jupiter Params}: estensione di JUnit per la creazione di test parametrizzati, che consente di eseguire lo stesso test con diversi input riducendo la duplicazione del codice.
+    \item \textbf{Mockito}: libreria per la creazione di mock objects, utilizzata per isolare le unità sotto test dalle loro dipendenze.
+    \item \textbf{JaCoCo}: strumento per la misurazione della code coverage, integrato nel processo di build per generare report sulla percentuale di codice effettivamente esercitata dai test.
+\end{itemize}
+
+I test si concentrano sulle componenti che contengono la logica di gioco più critica e sulle classi che orchestrano il comportamento di altre entità.
+
+Il cuore del testing riguarda il \textbf{model}: i tetromini vengono verificati nella loro creazione, rotazione e posizionamento, con test parametrizzati che coprono tutti e sette i tipi di pezzi. La \textbf{Board} è testata per la validazione delle posizioni, il rilevamento delle collisioni e l'eliminazione delle righe complete. Le strategie di selezione dei pezzi sono verificate nelle loro invarianti --- ad esempio, che il bag randomizer distribuisca tutti i pezzi prima di ripetere.
+
+Per quanto riguarda la \textbf{persistenza}, la \textbf{Leaderboard} è testata sia nella logica di ordinamento e limite delle voci, sia nel funzionamento dei diversi provider di storage (JSON su file e Redis), utilizzando Mockito per isolare i test dalle dipendenze esterne.
+
+Infine le classi \textbf{GameStateManager} e \textbf{GameSession} sono testate per verificare le transizioni tra gli stati del gioco e la corretta gestione del ciclo di vita della partita.
+
 \appendix
 
 \chapter{Guida utente}
@@ -236,7 +343,7 @@ Dalla schermata della classifica, premere \textbf{ESC} per tornare al menu.
     \item Laboratorio 11: \url{https://virtuale.unibo.it/mod/forum/discuss.php?d=181206#p251421}
 \end{itemize}
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 
 \bibitem{tetriswiki}
 TetrisWiki,
@@ -247,6 +354,61 @@ TetrisWiki,
 TetrisWiki,
 \textit{Tetromino -- Descrizione delle forme e dei colori ufficiali dei sette tetromini},
 \url{https://tetris.wiki/Tetromino}
+
+\bibitem{mvc}
+Wikipedia,
+\textit{Model--view--controller},
+\url{https://en.wikipedia.org/wiki/Model-view-controller}
+
+\bibitem{fsm}
+Wikipedia,
+\textit{Finite-state machine},
+\url{https://en.wikipedia.org/wiki/Finite-state_machine}
+
+\bibitem{servicelocator}
+Wikipedia,
+\textit{Service locator pattern},
+\url{https://en.wikipedia.org/wiki/Service_locator_pattern}
+
+\bibitem{gameloop}
+Wikipedia,
+\textit{Game loop},
+\url{https://en.wikipedia.org/wiki/Game_loop}
+
+\bibitem{command}
+Wikipedia,
+\textit{Command pattern},
+\url{https://en.wikipedia.org/wiki/Command_pattern}
+
+\bibitem{strategy}
+Wikipedia,
+\textit{Strategy pattern},
+\url{https://en.wikipedia.org/wiki/Strategy_pattern}
+
+\bibitem{simplefactory}
+Wikipedia,
+\textit{Factory (object-oriented programming)},
+\url{https://en.wikipedia.org/wiki/Factory_(object-oriented_programming)}
+
+\bibitem{templatemethod}
+Wikipedia,
+\textit{Template method pattern},
+\url{https://en.wikipedia.org/wiki/Template_method_pattern}
+
+\bibitem{fbounded}
+Wikipedia,
+\textit{Bounded quantification -- F-bounded quantification},
+\url{https://en.wikipedia.org/wiki/Bounded_quantification#F-bounded_quantification}
+
+\bibitem{registry}
+Martin Fowler,
+\textit{Registry},
+\url{https://martinfowler.com/eaaCatalog/registry.html}
+
+\bibitem{singleton}
+Wikipedia,
+\textit{Singleton pattern},
+\url{https://en.wikipedia.org/wiki/Singleton_pattern}
 
 \bibitem{adoptium}
 Eclipse Adoptium,
