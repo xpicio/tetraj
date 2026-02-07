@@ -1,4 +1,8 @@
 ```mermaid
+---
+config:
+  layout: dagre
+---
 classDiagram
     direction TB
 
@@ -28,12 +32,12 @@ classDiagram
     class Player {
     }
 
-    Game "1" *-- "1" Board
-    Game "1" o-- "1..3" Tetromino : current/next/held
-    Game --> SelectionStrategy : uses
-    Game --> SpeedStrategy : uses
+    Game *-- Board
+    Game *-- Tetromino
+    Game --> SelectionStrategy
+    Game --> SpeedStrategy
     Game --> Leaderboard : submits score
-    Board o-- "*" Tetromino : placed blocks
+    Board *-- Tetromino
     Leaderboard "1" *-- "0..10" LeaderboardEntry
     Player --> Game : plays
 ```

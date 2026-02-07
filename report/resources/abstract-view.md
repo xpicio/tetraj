@@ -2,28 +2,30 @@
 classDiagram
     class AbstractView~M~ {
         <<abstract>>
-        +render(M model)
-        #renderContent(M model)*
+        +render(model)
+        #renderContent(g, model)*
+        #captureFrame(model)
         #getBufferStrategy()
         #getCanvas()
+        #getBackgroundColor()
         #getWindowWidth()
         #getWindowHeight()
     }
 
     class PlayView {
-        #renderContent(PlayModel model)
+        #renderContent(g, model)
     }
 
     class MenuView {
-        #renderContent(MenuModel model)
+        #renderContent(g, model)
     }
 
     class GameOverView {
-        #renderContent(GameOverModel model)
+        #renderContent(g, model)
     }
 
     class LeaderboardView {
-        #renderContent(LeaderboardModel model)
+        #renderContent(g, model)
     }
 
     AbstractView <|-- PlayView

@@ -8,6 +8,8 @@
 \usepackage{parskip}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{xurl}
+\usepackage{listings}
 
 \geometry{margin=2.5cm}
 
@@ -47,7 +49,7 @@
 
 \section{Descrizione e requisiti}
 
-Tetraj è una riproduzione del videogioco Tetris~\cite{tetriswiki}. Il giocatore manipola forme geometriche chiamate tetromini (pezzi composti da quattro blocchi quadrati) che cadono dall'alto dell'area di gioco. L'obiettivo è posizionare i tetromini completando righe orizzontali senza lasciare spazi vuoti: le righe completate scompaiono e il giocatore guadagna punti. La partita termina quando i pezzi si accumulano fino a raggiungere la parte superiore dell'area di gioco.
+Tetraj è una riproduzione del videogioco Tetris~\cite{tetriswiki}. Il giocatore manipola forme geometriche chiamate tetromini (pezzi composti da quattro blocchi quadrati) che cadono dall'alto dell'area di gioco. L'obiettivo è posizionare i tetromini completando linee orizzontali senza lasciare spazi vuoti: le linee completate scompaiono e il giocatore guadagna punti. La partita termina quando i pezzi si accumulano fino a raggiungere la parte superiore dell'area di gioco.
 
 I tetromini sono sette, identificati da una lettera che ne richiama la forma: I (linea di 4 blocchi), O (quadrato), T, S, Z, J e L. Ogni tetromino ha un colore distintivo. L'area di gioco ha dimensioni standard: 10 celle in larghezza e 20 in altezza.
 
@@ -59,7 +61,7 @@ I tetromini sono sette, identificati da una lettera che ne richiama la forma: I 
         \item Supporto per tutti e sette i tetromini standard, ciascuno con il proprio colore
         \item Rotazione in senso orario e antiorario
         \item Caduta automatica con velocità crescente in base al livello
-        \item Movimento orizzontale (sinistra/destra)
+        \item Movimento orizzontale, a sinistra e a destra
         \item Soft drop (discesa accelerata) e hard drop (caduta istantanea)
     \end{itemize}
 
@@ -87,16 +89,16 @@ I tetromini sono sette, identificati da una lettera che ne richiama la forma: I 
 
     \item \textbf{Linee e punteggio}
     \begin{itemize}
-        \item Eliminazione delle righe completamente piene
-        \item Punteggio basato sul numero di righe eliminate simultaneamente
-        \item Bonus significativo per il ``Tetris'' (4 righe contemporanee)
+        \item Eliminazione delle linee completamente piene
+        \item Punteggio basato sul numero di linee eliminate simultaneamente
+        \item Bonus significativo per il ``Tetris'' (4 linee contemporanee)
         \item Punti bonus per il soft drop proporzionali alla distanza percorsa
         \item Punti bonus per l'hard drop proporzionali alla distanza di caduta
     \end{itemize}
 
     \item \textbf{Livelli e velocità}
     \begin{itemize}
-        \item Aumento del livello ogni 10 righe completate
+        \item Aumento del livello ogni 10 linee completate
         \item Due curve di velocità: valori predefiniti per livello (classica) oppure formula di crescita continua (moderna)
     \end{itemize}
 
@@ -132,7 +134,7 @@ I tetromini sono sette, identificati da una lettera che ne richiama la forma: I 
 
     \item \textbf{Usabilità}
     \begin{itemize}
-        \item Visualizzazione chiara di: area di gioco, pezzo corrente, prossimo pezzo, pezzo trattenuto, punteggio, livello, righe completate
+        \item Visualizzazione chiara di: area di gioco, pezzo corrente, prossimo pezzo, pezzo trattenuto, punteggio, livello, linee completate
     \end{itemize}
 \end{itemize}
 
@@ -142,15 +144,15 @@ Il dominio di Tetraj ruota attorno a poche entità fondamentali.
 
 L'elemento centrale è il \textbf{tetromino}, una forma geometrica composta da quattro blocchi. Esistono sette tipi di tetromino (I, O, T, S, Z, J, L), ciascuno con una forma e un colore caratteristici~\cite{tetromino}. Ogni tetromino possiede una posizione nell'area di gioco e uno stato di rotazione. Un tetromino può muoversi orizzontalmente, cadere verso il basso e ruotare.
 
-L'\textbf{area di gioco} è una griglia rettangolare (10 celle in larghezza e 20 in altezza) che contiene i blocchi dei tetromini già posizionati. L'area di gioco è responsabile di verificare se una posizione è valida (non fuori dai bordi, non sovrapposta ad altri blocchi), di accogliere i tetromini quando si depositano, e di rilevare e rimuovere le righe complete.
+L'\textbf{area di gioco} è una griglia rettangolare (10 celle in larghezza e 20 in altezza) che contiene i blocchi dei tetromini già posizionati. L'area di gioco ha la responsabilità di verificare se una posizione è valida (non fuori dai bordi, non sovrapposta ad altri blocchi), di accogliere i tetromini quando si depositano, e di rilevare e rimuovere le linee complete.
 
-La \textbf{partita} rappresenta una sessione di gioco completa. Una partita tiene traccia del punteggio, del livello corrente, del numero di righe eliminate, e gestisce la successione dei tetromini: il pezzo corrente in caduta, il prossimo pezzo in attesa, e l'eventuale pezzo trattenuto (held). La partita determina quando il gioco termina, ovvero quando un nuovo tetromino non può essere posizionato in cima all'area di gioco.
+La \textbf{partita} rappresenta una sessione di gioco completa. Una partita tiene traccia del punteggio, del livello corrente, del numero di linee eliminate, e gestisce la successione dei tetromini: il pezzo corrente in caduta, il prossimo pezzo in attesa, e l'eventuale pezzo trattenuto. La partita determina quando il gioco termina, ovvero quando un nuovo tetromino non può essere posizionato in cima all'area di gioco.
 
 La \textbf{strategia di selezione} determina quale sarà il prossimo tetromino. Le due modalità (classica e moderna) differiscono nel criterio di scelta ma condividono lo stesso ruolo: fornire il prossimo pezzo alla partita.
 
 La \textbf{strategia di velocità} determina quanto rapidamente i tetromini cadono in base al livello corrente. Anche qui le due modalità (classica e moderna) differiscono nella formula di calcolo ma hanno lo stesso scopo.
 
-La \textbf{classifica} mantiene l'elenco dei migliori punteggi ottenuti. Ogni voce della classifica è rappresentata da un \textbf{record} che associa un punteggio ad altre informazioni rilevanti (ad esempio la data). La classifica è ordinata in modo decrescente per punteggio e può avere un numero massimo di 10 voci. Al termine di una partita, se il punteggio ottenuto è sufficientemente alto, il giocatore può inserire il proprio record in classifica.
+La \textbf{classifica} mantiene l'elenco dei migliori punteggi ottenuti. Ogni voce della classifica è rappresentata da un \textbf{elemento} che associa un punteggio ad altre informazioni rilevanti (ad esempio la data). La classifica è ordinata in modo decrescente per punteggio e può avere un numero massimo di 10 voci. La classifica deve essere persistente tra le sessioni di gioco, delegando la memorizzazione a un sistema di storage esterno. Al termine di una partita, se il punteggio ottenuto è sufficientemente alto, il giocatore può inserire il proprio record in classifica.
 
 Infine il \textbf{giocatore} interagisce con la partita attraverso comandi: spostare il pezzo, ruotarlo, farlo cadere rapidamente, metterlo in hold, mettere in pausa.
 
@@ -179,9 +181,12 @@ Con questa architettura, aggiungere una nuova schermata al gioco richiede di cre
 
 L'architettura garantisce inoltre la completa sostituibilità della View senza impatti su Controller e Model. Le View non mantengono riferimenti al Model, ricevendolo solo come parametro per il rendering, e i Controller interagiscono con esse esclusivamente tramite l'interfaccia comune. I Model sono completamente agnostici rispetto alla tecnologia grafica. Per transitare ad una diversa libreria grafica sarebbe sufficiente reimplementare le classi View e adattare la gestione della finestra nel Game Loop; Controller e Model rimarrebbero invariati.
 
-% Placeholder per lo schema UML architetturale
-\vspace{1cm}
-\noindent\textit{[Schema UML architetturale: da inserire]}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{resources/architecture.png}
+    \caption{Diagramma UML dell'architettura del sistema}
+    \label{fig:architecture}
+\end{figure}
 
 \section{Design dettagliato}
 
@@ -200,9 +205,9 @@ Il gioco deve supportare diverse modalità di selezione del prossimo tetromino. 
 
 \textbf{Soluzione}
 
-Come da Figura~\ref{fig:piece-selection} si è adottata una combinazione di \textbf{Strategy}~\cite{strategy} e \textbf{Simple Factory}~\cite{simplefactory}. L'interfaccia \texttt{PieceSelectionStrategy} definisce il contratto per la selezione (\texttt{next()} restituisce il prossimo tipo di tetromino, \texttt{reset()} reinizializza lo stato), mentre le implementazioni concrete (\texttt{RandomStrategy}, \texttt{BagRandomizerStrategy}) incapsulano i diversi algoritmi. Infine \texttt{PieceSelectionFactory}, in \texttt{create()}, legge la configurazione e istanzia la strategia appropriata.
+Come da Figura~\ref{fig:piece-selection} si è adottata una combinazione di \textbf{Strategy}~\cite{strategy} e \textbf{Simple Factory}~\cite{simplefactory}. L'interfaccia \texttt{PieceSelectionStrategy} definisce il contratto per la selezione: \texttt{next()} restituisce il prossimo tipo di tetromino, \texttt{reset()} reinizializza lo stato. Mentre le implementazioni concrete (\texttt{RandomStrategy}, \texttt{BagRandomizerStrategy}) incapsulano i diversi algoritmi. Infine \texttt{PieceSelectionFactory}, in \texttt{create()}, legge la configurazione e istanzia la strategia appropriata.
 
-La soluzione risulta estensibile (nuove strategie senza modificare codice esistente), testabile (strategie isolabili), e configurabile a runtime. Al contrario di alternative basate su If/Else/Switch-case o con l'utilizzo di Enum.
+La soluzione risulta estensibile (è possibile inserire nuove strategie senza modificare codice esistente), testabile (strategie isolabili), e configurabile a runtime. Al contrario di alternative basate su If/Else/Switch-case o con l'utilizzo di enum.
 
 \subsection{Rendering delle View}
 
@@ -219,7 +224,7 @@ Le diverse schermate del gioco (menu, partita, game over, classifica) condividon
 
 \textbf{Soluzione}
 
-Come da Figura~\ref{fig:abstract-view} si è adottato il pattern \textbf{Template Method}~\cite{templatemethod}. \texttt{AbstractView<M>} definisce il metodo template \texttt{render(M model)} che gestisce l'inizializzazione del buffer strategy per poi delegare a \texttt{renderContent(M model)}. Le sottoclassi (\texttt{PlayView}, \texttt{MenuView}, \texttt{GameOverView}, \texttt{LeaderboardView}) implementano solo \texttt{renderContent()} con la propria logica di disegno; la classe base fornisce anche getter protetti per risorse comuni (font, dimensioni, colori).
+Come da Figura~\ref{fig:abstract-view} si è adottato il pattern \textbf{Template Method}~\cite{templatemethod}. \texttt{AbstractView<M>} definisce il metodo template \texttt{render(M model)} che gestisce l'inizializzazione del buffer strategy per poi delegare a \texttt{renderContent(Graphics2D g, M model)}. Le sottoclassi (\texttt{PlayView}, \texttt{MenuView}, \texttt{GameOverView}, \texttt{LeaderboardView}) implementano solo \texttt{renderContent(Graphics2D g, M model)} con la propria logica di disegno; la classe base fornisce anche getter protetti per risorse comuni (font, dimensioni, colori).
 
 La soluzione elimina duplicazione e garantisce un'inizializzazione corretta e consistente, lasciando le sottoclassi focalizzate solo sul proprio disegno. Rispetto a una soluzione basata su composizione, risulta meno flessibile in scenari più complessi.
 
@@ -246,6 +251,34 @@ Per la creazione, \texttt{TetrominoRegistry} implementa il pattern \textbf{Regis
 
 La soluzione garantisce type-safety a compile-time, codice DRY ed estensibilità: aggiungere un nuovo tetromino richiede solo di creare la classe e registrarla. Al contrario, alternative senza generici avrebbero richiesto cast espliciti, mentre uno Switch-case sulla classe avrebbe violato l'Open/Closed Principle.
 
+\subsection{Gestione degli stati di gioco}
+
+\textbf{Problema}
+
+Il gioco è composto da più schermate (menu principale, partita, game over, classifica) con transizioni vincolate: ad esempio, dalla partita si può passare solo a game over o al menu, mai direttamente alla classifica. È necessario gestire queste transizioni in modo centralizzato, validandole per evitare stati incoerenti, e propagare le informazioni rilevanti da uno stato al successivo senza accoppiare i controller tra loro.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.6\textwidth]{resources/fsm-states.png}
+    \caption{Diagramma degli stati e delle transizioni valide nel gioco}
+    \label{fig:fsm-states}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=0.95\textwidth]{resources/fsm.png}
+    \caption{Diagramma UML della macchina a stati finiti per la gestione delle schermate}
+    \label{fig:fsm}
+\end{figure}
+
+\textbf{Soluzione}
+
+Come da Figura~\ref{fig:fsm-states} e Figura~\ref{fig:fsm}, si è adottata una \textbf{macchina a stati finiti} (FSM)~\cite{fsm} per governare le transizioni tra le schermate. La classe \texttt{GameStateManager} mantiene lo stato corrente tramite l'enum \texttt{GameState} e una mappa di transizioni valide (\texttt{EnumMap<GameState, Set<GameState>{>}}) inizializzata nel costruttore. Il metodo \texttt{switchTo(GameState)} verifica la validità della transizione prima di effettuarla: se non è valida, la rifiuta e logga un warning; altrimenti invoca \texttt{exit()} sul controller uscente --- che restituisce una \texttt{GameSession} con i dati della partita --- e \texttt{enter(GameSession)} sul controller entrante, propagando il contesto senza che i due controller si conoscano.
+
+\texttt{GameSession} è un oggetto immutabile (con copie difensive per le immagini) che funge da \textbf{data transfer object} (DTO) tra gli stati: contiene punteggio, livello, linee completate, ultimo frame renderizzato e tempi di gioco. L'uso di un Builder semplifica la costruzione nelle varie transizioni. Il \texttt{GameEngine}, nel game loop, interroga il \texttt{GameStateManager} per rilevare cambiamenti di stato e aggiornare il canvas nella finestra.
+
+Questa soluzione centralizza la logica di transizione in un unico punto, rendendo impossibili transizioni non previste e disaccoppiando completamente i controller tra loro. Aggiungere un nuovo stato richiede solo di estendere l'enum, definire le transizioni valide e registrare il controller associato, senza modificare il \texttt{GameEngine} né gli altri controller.
+
 \chapter{Sviluppo}
 
 \section{Testing automatizzato}
@@ -261,7 +294,7 @@ Il progetto utilizza diverse librerie per garantire la qualità del codice attra
 
 I test si concentrano sulle componenti che contengono la logica di gioco più critica e sulle classi che orchestrano il comportamento di altre entità.
 
-Il cuore del testing riguarda il \textbf{model}: i tetromini vengono verificati nella loro creazione, rotazione e posizionamento, con test parametrizzati che coprono tutti e sette i tipi di pezzi. La \textbf{Board} è testata per la validazione delle posizioni, il rilevamento delle collisioni e l'eliminazione delle righe complete. Le strategie di selezione dei pezzi sono verificate nelle loro invarianti --- ad esempio, che il bag randomizer distribuisca tutti i pezzi prima di ripetere.
+Il cuore del testing riguarda il \textbf{model}: i tetromini vengono verificati nella loro creazione, rotazione e posizionamento, con test parametrizzati che coprono tutti e sette i tipi di pezzi. La \textbf{Board} è testata per la validazione delle posizioni, il rilevamento delle collisioni e l'eliminazione delle linee complete. Le strategie di selezione dei pezzi sono verificate nelle loro invarianti --- ad esempio, che il bag randomizer distribuisca tutti i pezzi prima di ripetere.
 
 Per quanto riguarda la \textbf{persistenza}, la \textbf{Leaderboard} è testata sia nella logica di ordinamento e limite delle voci, sia nel funzionamento dei diversi provider di storage (JSON su file e Redis), utilizzando Mockito per isolare i test dalle dipendenze esterne.
 
@@ -269,57 +302,103 @@ Infine le classi \textbf{GameStateManager} e \textbf{GameSession} sono testate p
 
 \section{Note di sviluppo}
 
-\subsection{Librerie di terze parti}
+\textbf{Utilizzo di Log4j2 per il logging}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/GameStateManager.java#L17}
 
-\textbf{Log4j2}
+\textbf{Utilizzo di Jackson per serializzazione e deserializzazione JSON}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L119-L146}
 
-Il logging è realizzato con \textbf{Log4j2}, accessibile tramite l'interfaccia \texttt{Logger} e l'implementazione \texttt{ConsoleLogger}. Un esempio di utilizzo è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/GameStateManager.java#L17C31-L17C37}.
+\textbf{Utilizzo di Jedis per connessione a Redis}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/RedisStorageProvider.java#L70-L92}
 
-\textbf{Jackson}
+\textbf{Utilizzo di JUnit 5 con test parametrizzati (@MethodSource)}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/piece/TetrominoTest.java#L201}
 
-La serializzazione e deserializzazione dei dati della classifica su file JSON, o su databse Redis, è realizzata con \textbf{Jackson}. Un esempio di inizializzazione è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L28C37-L28C43}.
+\textbf{Utilizzo di JUnit 5 con test parametrizzati (@CsvSource)}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/PlayModelTest.java#L661}
 
-In questa funzione vengono letti i dati o scritti con un default in caso di errore: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L119-L146}.
+\textbf{Utilizzo di Mockito per mock objects}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/leaderboard/RedisStorageProviderTest.java#L51-L69}
 
-\textbf{Jedis}
+\textbf{F-bounded polymorphism per copie type-safe}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/AbstractTetromino.java#L10}
 
-La connessione al database Redis per la persistenza della classifica è gestita tramite \textbf{Jedis}. Un esempio di inizializzazione del pool di connessioni è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/RedisStorageProvider.java#L70-L92}.
+\textbf{Strutture generiche complesse innestate}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/TetrominoRegistry.java#L14-L16}
 
-\textbf{JUnit}
+\textbf{TypeReference di Jackson per preservare tipi generici a runtime}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L33-L36}
 
-I test parametrizzati di \textbf{JUnit 5} permettono di eseguire lo stesso test con diversi input. Un esempio con l'annotazione \texttt{MethodSource} è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/piece/TetrominoTest.java#L201}.
+\textbf{Inizializzazione lazy thread-safe con ConcurrentHashMap.computeIfAbsent()}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/util/LoggerFactory.java#L50}
 
-Un secondo esempio con l'annotazione \texttt{CsvSource} è: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/PlayModelTest.java#L661}.
+\textbf{Shutdown hook con watchdog thread per cleanup risorse}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/ApplicationContext.java#L176-L201}
 
-\textbf{Mockito}
+\textbf{Utilizzo di lambda expressions}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/TetrominoRegistry.java#L20-L31}
 
-\textbf{Mockito} è utilizzato per creare mock objects e isolare le unità sotto test dalle dipendenze esterne. Un esempio è il mock del pool di connessioni Jedis: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/test/java/it/unibo/tetraj/model/leaderboard/RedisStorageProviderTest.java#L51-L69}.
+\textbf{Utilizzo di method references}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L189}
 
-\subsection{Utilizzo di generici}
+\textbf{Utilizzo di Stream}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/RedisStorageProvider.java#L175-L179}
 
-Pattern ricorsivo \texttt{<T extends AbstractTetromino<T>{}>} per operazioni type-safe. Un esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/AbstractTetromino.java#L10}.
+\textbf{Chaining null-safe con Optional}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L240}
 
-Strutture complesse innestate come ad esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/TetrominoRegistry.java#L14-L16}.
+\textbf{Utilizzo di functional interfaces (Consumer, BiFunction, Runnable) come parametri}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L325-L338}
 
-Pattern Jackson per preservare tipi generici a runtime tramite classe anonima. Esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/JsonFileStorageProvider.java#L33-L36}.
+\textbf{Costruzione di oggetti immutabili complessi}\\
+Permalink: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/controller/PlayController.java#L61-L69}
 
-\subsection{Concorrenza}
+\subsubsection{Codice riadattato}
 
-Inizializzazione lazy thread-safe con \texttt{ConcurrentHashMap.computeIfAbsent()}, come ad esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/util/LoggerFactory.java#L50}.
+Un aspetto che sicuramente ha semplificato notevolmente la gestione dei pezzi e del wall kick è stato l'utilizzo di matrici tridimensionali con stati di rotazione pre-calcolati. Invece di computare le rotazioni matematicamente a runtime tramite trasformazioni geometriche, ogni tetromino definisce esplicitamente i suoi 4 stati rotazionali come layer di una matrice 3D:
 
-Shutdown hook con watchdog thread per cleanup risorse durante la chiusura dell'applicazione, \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/ApplicationContext.java#L176-L201}.
+\begin{lstlisting}[language=Java]
+/** The 4 rotation states of the T piece. */
+private static final int[][][] SHAPES = {
+  {{0, 1, 0}, {1, 1, 1}, {0, 0, 0}},
+  {{0, 1, 0}, {0, 1, 1}, {0, 1, 0}},
+  {{0, 0, 0}, {1, 1, 1}, {0, 1, 0}},
+  {{0, 1, 0}, {1, 1, 0}, {0, 1, 0}},
+};
+\end{lstlisting}
 
-\subsection{Costrutti funzionali}
+Questo approccio, ispirato al Super Rotation System (SRS) definito nelle Tetris Guideline~\cite{srs}, è lo standard de facto nelle implementazioni del gioco, come documentato anche nella libreria Tetris Gymnasium~\cite{tetrisgym}. La rotazione diventa un semplice cambio di indice nella matrice, eliminando calcoli trigonometrici e casi speciali per pezzi asimmetrici.
 
-Lambda utilizzare in diversi punti del codice, eccone un esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/piece/TetrominoRegistry.java#L20-L31}.
+Anche le formule per la velocità di caduta dei pezzi sono riprese da fonti ufficiali: la \texttt{ClassicSpeedStrategy} utilizza la tabella frames-per-row del Tetris NES (NTSC, 60 FPS), mentre la \texttt{ModernSpeedStrategy} implementa la formula delle Tetris Guideline: $(0.8 - ((level - 1) \times 0.007))^{level - 1}$.
 
-Method references, utilizzato dove possibile. Alcuni esempi: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L189}, \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/controller/PlayController.java#L144}.
+\chapter{Commenti finali}
 
-Stream, come ad esempio \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/leaderboard/RedisStorageProvider.java#L175-L179}.
+\section{Autovalutazione e lavori futuri}
 
-Chaining null-safe con \texttt{Optional}, esempio: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L240}.
+Complessivamente il progetto ha raggiunto gli obiettivi che mi ero prefissato: un clone funzionante di Tetris con un'architettura pulita e manutenibile. Ci sono tuttavia alcuni aspetti dell'implementazione che, col senno di poi, avrei affrontato diversamente.
 
-Uso di functional interfaces (\texttt{Consumer}, \texttt{BiFunction}, \texttt{Runnable}) come parametri. Esempi: \url{https://github.com/xpicio/OOP24-tetraj/blob/273676fb34af5e40427604d965e7eca11c81e7b8/src/main/java/it/unibo/tetraj/model/PlayModel.java#L325-L338}.
+\textbf{Gestione della GameSession.} La classe \texttt{GameSession} è stata introdotta in una fase avanzata dello sviluppo, quando l'architettura dei controller era già consolidata. Il suo scopo è propagare le informazioni di una partita (punteggio, livello, ultimo frame) tra i diversi stati del gioco, ad esempio da \texttt{PLAYING} a \texttt{GAME\_OVER}. La soluzione funziona, ma risulta un po' rigida: ogni controller deve esplicitamente costruire e restituire una \texttt{GameSession} nel metodo \texttt{exit()}, e riceverla nel metodo \texttt{enter()}. Un approccio alternativo, progettato fin dall'inizio, avrebbe potuto essere un sistema ad eventi: i controller pubblicano eventi (es. \texttt{GameEndedEvent}) e gli interessati si sottoscrivono, disaccoppiando completamente produttori e consumatori di informazioni.
+
+\textbf{Inizializzazione statica dei controller.} Nell'\texttt{ApplicationContext}, i controller vengono istanziati e registrati manualmente nel metodo \texttt{setupGameComponents()}. Ogni nuova coppia stato-controller richiede modifiche in questo punto. Una soluzione più flessibile avrebbe potuto sfruttare annotazioni custom (es. \texttt{@GameState(GameState.MENU)}) e reflection per scoprire automaticamente i controller e associarli ai rispettivi stati nel \texttt{GameStateManager}, seguendo un approccio simile a quello di framework come Spring.
+
+\textbf{Accoppiamento dei colori con AWT.} Nei model dei tetromini il colore è rappresentato direttamente con \texttt{java.awt.Color}, creando una dipendenza dal framework grafico. Per una maggiore portabilità sarebbe stato preferibile utilizzare un enum o un record \texttt{Color(int r, int g, int b)}, lasciando alla view il compito di convertirlo nel tipo specifico del framework.
+
+\textbf{Gestione del nickname.} Nei requisiti iniziali era previsto che il nickname del giocatore fosse richiesto tramite input. Per semplificare l'implementazione e ridurre i tempi di sviluppo, ho optato per la generazione automatica del nickname e la sua persistenza in un file nella home directory dell'utente.
+
+\textbf{Sviluppi futuri.} Se dovessi portare avanti il progetto, oltre a risolvere i punti sopra citati, aggiungerei:
+\begin{itemize}
+    \item Schermata delle opzioni per configurare modalità di gioco e impostazioni a runtime
+    \item Personalizzazione grafica dei tetromini e dello sfondo
+    \item Ottimizzazione delle prestazioni e dell'utilizzo della memoria
+\end{itemize}
+
+\section{Difficoltà incontrate e commenti per i docenti}
+
+Premetto che la mia situazione non è quella dello studente ``tipo'': sono fuori corso da diversi anni e lavoro a tempo pieno. Questa condizione ha rappresentato la difficoltà principale nello svolgimento del progetto, non tanto per complessità tecniche o lacune nella preparazione, quanto per l'impossibilità di garantire un impegno continuativo nel tempo.
+
+Il lavoro frammentato ha reso più complesso mantenere il filo logico del progetto: a volte le sessioni di sviluppo si concentravano nel fine settimana, seguite da un'intera settimana senza poter toccare il codice. Riprendere il lavoro dopo giorni di pausa significava ogni volta ricostruire mentalmente il contesto: dove ero arrivato, quali decisioni avevo preso e perché, quali erano i prossimi passi. Questo overhead ha inevitabilmente rallentato lo sviluppo e, in alcuni casi, portato a riscrivere parti di codice che con un lavoro più continuo sarebbero state affrontate diversamente fin dall'inizio.
+
+Non intendo con questo cercare giustificazioni o attenuanti: la responsabilità di non aver completato il percorso universitario nei tempi previsti è esclusivamente mia. Tuttavia, ritengo utile condividere questa esperienza perché rappresenta una realtà concreta di chi, per scelte di vita o necessità, si trova a conciliare studio e lavoro. Il corso e il progetto sono stati comunque un'occasione preziosa per consolidare competenze, e per approfondire aspetti della programmazione ad oggetti che nella pratica lavorativa spesso si danno per scontati o si dimentica di applicare.
 
 \appendix
 
@@ -337,17 +416,24 @@ In alternativa, è possibile scaricare l'ultima versione ed eseguire direttament
 
 \textbf{macOS / Linux (zsh/bash):}
 \begin{verbatim}
-curl -L https://tinyurl.com/tetraj-jar -o /tmp/tetraj.jar && \
+curl -L https://tinyurl.com/tetrajar -o /tmp/tetraj.jar && \
   java -jar /tmp/tetraj.jar
 \end{verbatim}
 
 \textbf{Windows (PowerShell):}
 \begin{verbatim}
-Invoke-WebRequest -Uri "https://tinyurl.com/tetraj-jar" `
+Invoke-WebRequest -Uri "https://tinyurl.com/tetrajar" `
   -OutFile "$env:TEMP\tetraj.jar"; java -jar "$env:TEMP\tetraj.jar"
 \end{verbatim}
 
 \section{Schermata iniziale}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{resources/screenshots/01-MenuView.png}
+    \caption{Schermata iniziale del gioco}
+    \label{fig:menu-view}
+\end{figure}
 
 All'avvio viene mostrato il menu principale. Da qui è possibile:
 
@@ -358,6 +444,13 @@ All'avvio viene mostrato il menu principale. Da qui è possibile:
 \end{itemize}
 
 \section{Durante la partita}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{resources/screenshots/03-PlayView.png}
+    \caption{Schermata di gioco}
+    \label{fig:play-view}
+\end{figure}
 
 Una volta avviata la partita, sullo schermo sono visibili: l'area di gioco centrale dove cadono i pezzi, il prossimo pezzo in arrivo, l'eventuale pezzo messo da parte, il punteggio, il livello e il numero di linee completate.
 
@@ -374,6 +467,13 @@ I controlli disponibili sono:
     \item \textbf{P}: mette in pausa la partita
     \item \textbf{ESC}: torna al menu principale
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{resources/screenshots/04-PlayViewPaused.png}
+    \caption{Schermata di gioco in pausa}
+    \label{fig:play-view-paused}
+\end{figure}
 
 Durante la pausa, premere \textbf{P} o \textbf{ESC} per riprendere a giocare.
 
@@ -394,6 +494,13 @@ Il livello aumenta ogni 10 linee completate, rendendo la caduta dei pezzi progre
 
 \section{Fine partita e classifica}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{resources/screenshots/05-GameOver.png}
+    \caption{Schermata di fine della partita}
+    \label{fig:gameover}
+\end{figure}
+
 La partita termina quando non c'è più spazio per posizionare un nuovo pezzo. Viene mostrata la schermata di fine partita con il punteggio ottenuto. Da qui è possibile:
 
 \begin{itemize}
@@ -401,6 +508,13 @@ La partita termina quando non c'è più spazio per posizionare un nuovo pezzo. V
     \item Premere \textbf{L} per visualizzare la classifica
     \item Premere \textbf{ESC} per tornare al menu principale
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{resources/screenshots/02-LeaderboardView.png}
+    \caption{Schermata con i dieci punteggi migliori "Block legends"}
+    \label{fig:leaderboard}
+\end{figure}
 
 Dalla schermata della classifica, premere \textbf{ESC} per tornare al menu.
 
@@ -419,7 +533,7 @@ Dalla schermata della classifica, premere \textbf{ESC} per tornare al menu.
 
 \bibitem{tetriswiki}
 TetrisWiki,
-\textit{Tetris Wiki -- Enciclopedia della community dedicata al gioco Tetris},
+\textit{Enciclopedia della community dedicata al gioco Tetris},
 \url{https://tetris.wiki/Tetris.wiki}
 
 \bibitem{tetromino}
@@ -429,17 +543,17 @@ TetrisWiki,
 
 \bibitem{mvc}
 Wikipedia,
-\textit{Model--view--controller},
+\textit{Pattern Model--view--controller},
 \url{https://en.wikipedia.org/wiki/Model-view-controller}
 
 \bibitem{fsm}
 Wikipedia,
-\textit{Finite-state machine},
+\textit{Pattern Finite-state machine},
 \url{https://en.wikipedia.org/wiki/Finite-state_machine}
 
 \bibitem{servicelocator}
 Wikipedia,
-\textit{Service locator pattern},
+\textit{Pattern Service locator},
 \url{https://en.wikipedia.org/wiki/Service_locator_pattern}
 
 \bibitem{gameloop}
@@ -449,38 +563,48 @@ Wikipedia,
 
 \bibitem{command}
 Wikipedia,
-\textit{Command pattern},
+\textit{Pattern Command},
 \url{https://en.wikipedia.org/wiki/Command_pattern}
 
 \bibitem{strategy}
 Wikipedia,
-\textit{Strategy pattern},
+\textit{Pattern Strategy},
 \url{https://en.wikipedia.org/wiki/Strategy_pattern}
 
 \bibitem{simplefactory}
 Wikipedia,
-\textit{Factory (object-oriented programming)},
+\textit{Pattern Factory},
 \url{https://en.wikipedia.org/wiki/Factory_(object-oriented_programming)}
 
 \bibitem{templatemethod}
 Wikipedia,
-\textit{Template method pattern},
+\textit{Pattern Template Method},
 \url{https://en.wikipedia.org/wiki/Template_method_pattern}
 
 \bibitem{fbounded}
 Wikipedia,
-\textit{Bounded quantification -- F-bounded quantification},
+\textit{Generici -- Bounded quantification, F-bounded quantification},
 \url{https://en.wikipedia.org/wiki/Bounded_quantification#F-bounded_quantification}
 
 \bibitem{registry}
 Martin Fowler,
-\textit{Registry},
+\textit{Pattern Registry},
 \url{https://martinfowler.com/eaaCatalog/registry.html}
 
 \bibitem{singleton}
 Wikipedia,
-\textit{Singleton pattern},
+\textit{Pattern Singleton},
 \url{https://en.wikipedia.org/wiki/Singleton_pattern}
+
+\bibitem{srs}
+TetrisWiki,
+\textit{Tetromino -- Super Rotation System},
+\url{https://tetris.wiki/Super_Rotation_System}
+
+\bibitem{tetrisgym}
+Tetris Gymnasium,
+\textit{Tetromino -- Documentazione delle forme e rotazioni},
+\url{https://max-we.github.io/Tetris-Gymnasium/components/tetromino/}
 
 \bibitem{adoptium}
 Eclipse Adoptium,

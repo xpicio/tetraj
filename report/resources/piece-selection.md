@@ -2,26 +2,27 @@
 classDiagram
     class PieceSelectionStrategy {
         <<interface>>
-        +next() Class~AbstractTetromino~
+        +next() Class~? extends AbstractTetromino~?~~
         +reset() void
     }
 
     class RandomStrategy {
-        +next() Class~AbstractTetromino~
+        +next() Class~? extends AbstractTetromino~?~~
         +reset() void
     }
 
     class BagRandomizerStrategy {
-        +next() Class~AbstractTetromino~
+        +next() Class~? extends AbstractTetromino~?~~
         +reset() void
     }
 
     class PieceSelectionFactory {
-        +create(config)$ PieceSelectionStrategy
+        +create() PieceSelectionStrategy
+        +create(strategyName) PieceSelectionStrategy
     }
 
     class TetrominoFactory {
-        +create() AbstractTetromino
+        +create() AbstractTetromino~?~
     }
 
     PieceSelectionStrategy <|.. RandomStrategy
