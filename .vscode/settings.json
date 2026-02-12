@@ -9,19 +9,19 @@
   "java.configuration.runtimes": [
     {
       "name": "JavaSE-21",
-      "path": "/opt/homebrew/opt/sdkman-cli/libexec/candidates/java/21.0.9-tem",
+      "path": "/Users/xpicio/.sdkman/candidates/java/21.0.9-tem",
       "default": true
     }
   ],
   "java.configuration.updateBuildConfiguration": "automatic",
-  // DISABILITA formattazione automatica NATIVA per Java!
-  // Useremo Google Java Format con shortcut manuale
+  // Disable native Java auto-formatting.
+  // Google Java Format is applied via manual shortcut instead.
   "[java]": {
     "editor.formatOnSave": false,
     "editor.formatOnPaste": false,
     "editor.formatOnType": false,
     "editor.defaultFormatter": null
   },
-  // Disabilita anche gli organizer di import automatici
+  // Disable automatic import organization
   "java.saveActions.organizeImports": false
 }
